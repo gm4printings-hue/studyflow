@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Flow - Invitation Card</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #0f766e 0%, #115e59 100%);
+            color: #0f172a;
+            margin: 0; padding: 20px;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh;
+        }
+        .invitation-card {
+            background: #ffffff;
+            width: 100%; max-width: 400px;
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        .logo-badge {
+            background: #0f766e; color: white;
+            width: 50px; height: 50px; border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px; margin: 0 auto 12px auto;
+        }
+        h1 { font-size: 20px; color: #0f766e; margin-bottom: 4px; }
+        .subtitle { font-size: 11px; color: #64748b; margin-bottom: 16px; }
+        
+        .features-box {
+            background: #f8fafc; border: 1px solid #cbd5e1;
+            border-radius: 12px; padding: 12px; text-align: left;
+            font-size: 11px; color: #334155; margin-bottom: 16px; line-height: 1.5;
+        }
+        .features-box b { color: #0f766e; }
+
+        .qr-container {
+            background: #ffffff; padding: 10px; border: 2px dashed #0f766e;
+            border-radius: 16px; display: inline-block; margin-bottom: 12px;
+        }
+        .qr-container img { width: 140px; height: 140px; display: block; }
+
+        .app-link {
+            font-size: 11px; color: #0f766e; font-weight: bold;
+            word-break: break-all; margin-bottom: 16px; display: block;
+            text-decoration: none;
+        }
+        .footer-brand {
+            font-size: 9px; color: #94a3b8; border-top: 1px solid #e2e8f0;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="invitation-card">
+        <div class="logo-badge">🎓</div>
+        <h1>Study Flow</h1>
+        <div class="subtitle">AI Educational Assistant • Powered by Distingstyle Ltd</div>
+
+        <div class="features-box">
+            <b>✨ Why Study Flow?</b><br>
+            • AI Explanations in English, French & Arabic.<br>
+            • Voice Notes 🎙️ & 3-Point Quick Summaries ⚡.<br>
+            • Smart Error Vault for Exam Prep 🧠.<br>
+            • 2 FREE Summer Months included! ☀️
+        </div>
+
+        <div class="qr-container">
+            <!-- Dynamic QR Code pointing to your app URL -->
+            <img id="qrCodeImg" src="" alt="Scan to Open Study Flow">
+        </div>
+
+        <span class="app-link" id="displayUrlText">https://gm4printings-hue.github.io/studyflow/</span>
+
+        <div class="footer-brand">
+            Scan QR Code or Click Link to Start Learning Today! © 2026
+        </div>
+    </div>
+
+    <script>
+        // Set your actual deployed app URL here
+        const appUrl = "https://gm4printings-hue.github.io/studyflow/";
+        document.getElementById('displayUrlText').textContent = appUrl;
+        document.getElementById('displayUrlText').href = appUrl;
+
+        // Generate QR code dynamically via free API
+        const qrImg = document.getElementById('qrCodeImg');
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(appUrl)}`;
+    </script>
+</body>
+</html>
