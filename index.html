@@ -108,9 +108,13 @@
             border-bottom: 1px solid var(--border); background: var(--card-bg);
         }
         .logo-area { display: flex; align-items: center; gap: 10px; }
-        .logo-icon { font-size: 16px; background: var(--primary); color: white; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 8px; }
-        .logo-text h1 { font-size: 13px; font-weight: 700; color: var(--text-main); }
-        .logo-text span { font-size: 9px; color: var(--text-muted); }
+        .logo-icon { 
+            width: 36px; height: 36px; background: var(--primary); color: white; 
+            display: flex; align-items: center; justify-content: center; border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(15, 118, 110, 0.3); flex-shrink: 0;
+        }
+        .logo-text h1 { font-size: 14px; font-weight: 700; color: var(--text-main); line-height: 1.1; }
+        .logo-text span { font-size: 9px; color: var(--text-muted); display: block; margin-top: 1px; }
 
         .theme-select { padding: 4px 6px; border-radius: 6px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text-main); font-size: 10px; cursor: pointer; }
 
@@ -178,17 +182,12 @@
 
         .countdown-timer { font-size: 12px; font-weight: bold; color: #e11d48; margin-top: 2px; }
 
-        .quiz-btn { padding: 7px; border-radius: 6px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text-main); cursor: pointer; text-align: left; font-size: 11px; display: block; width: 100%; margin-top: 5px; }
-        .quiz-btn:hover { background: rgba(15, 118, 110, 0.05); border-color: var(--primary); }
-
         .pricing-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px; margin-bottom: 8px; text-align: center; }
         .pricing-card.featured { border-color: var(--primary); background: rgba(15, 118, 110, 0.03); }
 
         .league-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 10px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 6px; font-size: 11px; }
         .league-row.leader { background: rgba(254, 240, 138, 0.25); border-color: #eab308; }
         
-        .vault-item { background: rgba(225, 29, 72, 0.04); border: 1px solid rgba(225, 29, 72, 0.3); border-radius: 8px; padding: 8px; margin-bottom: 6px; font-size: 11px; }
-
         .wa-box { background: rgba(16, 185, 129, 0.05); border: 1px solid #10b981; border-radius: 10px; padding: 10px; margin-bottom: 10px; }
         .wa-input { width: 100%; padding: 6px; font-size: 11px; border: 1px solid var(--border); border-radius: 6px; background: var(--card-bg); color: var(--text-main); margin-top: 5px; }
 
@@ -197,11 +196,11 @@
 </head>
 <body data-theme="light">
 
-    <!-- AUTHENTICATION OVERLAY WITH FULL "REMEMBER ME" (EMAIL & PASSWORD) -->
+    <!-- AUTHENTICATION OVERLAY WITH TRIAL TOKEN ACTIVATION -->
     <div id="authOverlay">
         <div class="auth-card">
             <h2 id="authTitle">Study Flow</h2>
-            <p style="font-size: 9px; color: var(--text-muted); text-align:center;">Study Flow • Operated by Distingstyle Ltd</p>
+            <p style="font-size: 9px; color: var(--text-muted); text-align:center;">Study Flow • Owned by Distingstyle Ltd</p>
             <p style="font-size: 10px; color: var(--text-muted); text-align:center;" id="authSub">Sign in to your account</p>
             
             <input type="email" id="authEmail" class="auth-input" placeholder="Email address (e.g. user@gmail.com)">
@@ -216,15 +215,15 @@
                 <button type="button" class="eye-btn" onclick="togglePassword('authConfirmPass', this)">👁️</button>
             </div>
 
-            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 10px; margin-top: -2px;">
-                <label style="display: flex; align-items: center; gap: 4px; cursor: pointer; color: var(--text-muted);">
-                    <input type="checkbox" id="rememberMeCheck"> Remember Me (Email & Password)
-                </label>
-                <a href="#" onclick="handleForgotPassword(event)" style="color: var(--primary); text-decoration: none;">Forgot Password?</a>
+            <div class="auth-input" id="trialTokenGroup" style="display:none; background: rgba(16,185,129,0.05); border-color:#10b981;">
+                <input type="text" id="trialTokenInput" class="auth-input" placeholder="Enter Trial Token Code (Optional)" style="border:none; background:transparent;">
             </div>
 
-            <div style="font-size: 10px; display: flex; align-items: center; gap: 5px; margin-top: 2px;">
-                <input type="checkbox" id="termsCheck" checked> <span>I agree to Terms & Conditions</span>
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 10px; margin-top: -2px;">
+                <label style="display: flex; align-items: center; gap: 4px; cursor: pointer; color: var(--text-muted);">
+                    <input type="checkbox" id="rememberMeCheck"> Remember Me
+                </label>
+                <a href="#" onclick="handleForgotPassword(event)" style="color: var(--primary); text-decoration: none;">Forgot Password?</a>
             </div>
 
             <button class="auth-btn" type="button" onclick="handleAuthSubmit()" id="authSubmitBtn" style="margin-top: 4px;">Sign In</button>
@@ -259,10 +258,14 @@
 <div class="app-container">
     <div class="app-header">
         <div class="logo-area">
-            <div class="logo-icon">🎓</div>
+            <div class="logo-icon">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" style="width:20px;height:20px;">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                </svg>
+            </div>
             <div class="logo-text">
                 <h1>Study Flow</h1>
-                <span>AI Educational Assistant</span>
+                <span>Owned by Distingstyle Ltd</span>
             </div>
         </div>
         <div style="display: flex; gap: 4px; align-items: center;">
@@ -277,9 +280,9 @@
     <!-- Navigation Tabs -->
     <div class="nav-tabs">
         <button class="tab-btn active" onclick="switchTab('chatTab', this)">💬 Chat</button>
-        <button class="tab-btn" onclick="switchTab('vaultTab', this)">🧠 Error Vault <span id="vaultBadge" style="background:#e11d48;color:white;border-radius:10px;padding:1px 4px;font-size:8px;">0</span></button>
+        <button class="tab-btn" onclick="switchTab('vaultTab', this)">🧠 Vault <span id="vaultBadge" style="background:#e11d48;color:white;border-radius:10px;padding:1px 4px;font-size:8px;">0</span></button>
         <button class="tab-btn" onclick="switchTab('classBattleTab', this)">🏆 League</button>
-        <button class="tab-btn" onclick="switchTab('scheduleTab', this)">📅 Plan</button>
+        <button class="tab-btn" onclick="switchTab('scheduleTab', this)">📅 Schedules</button>
         <button class="tab-btn" onclick="switchTab('pricingTab', this)">💎 Plans</button>
     </div>
 
@@ -292,7 +295,7 @@
         <button onclick="openTopUpModal()" class="add-btn" style="font-size: 9px; padding: 2px 6px;">+ Top-Up</button>
     </div>
 
-    <!-- TAB 1: CHAT VIEW WITH PERSISTENT CACHED LESSON HISTORY -->
+    <!-- TAB 1: CHAT VIEW -->
     <div class="view-content active" id="chatTab">
         <div class="lang-control-bar">
             <span style="font-weight: 600; color: var(--primary);">🌐 Explain & Answer In:</span>
@@ -304,16 +307,14 @@
             </select>
         </div>
 
-        <div class="chat-container" id="chatBox">
-            <!-- Chat history will be loaded here from localStorage to save API costs -->
-        </div>
+        <div class="chat-container" id="chatBox"></div>
 
         <div class="chat-footer">
             <div class="tools-row">
                 <span style="font-weight: 600;">Explanation Format:</span>
                 <div class="checkbox-group">
                     <label><input type="checkbox" id="fmtText" checked> 📝 Text</label>
-                    <label><input type="checkbox" id="fmtVoice"> 🎙️ Voice Note</label>
+                    <label><input type="checkbox" id="fmtVoice"> 🎙️ Voice</label>
                     <label><input type="checkbox" id="fmtVideo"> 🎬 Video</label>
                     <label style="margin-left: auto; color: var(--primary);"><input type="checkbox" id="useBankCheck"> Bank Rollover</label>
                 </div>
@@ -337,29 +338,27 @@
     <!-- TAB 2: SMART ERROR VAULT -->
     <div class="view-content" id="vaultTab">
         <div class="card-box">
-            <h3>🧠 Smart Error Vault (Spaced Revision)</h3>
+            <h3>🧠 Smart Error Vault</h3>
             <p style="font-size: 10px; color: var(--text-muted); margin-bottom: 8px;">
-                Questions you miss in quizzes or difficult lesson problems are automatically saved here so you master them before exam day!
+                Questions you miss in quizzes are automatically saved here for revision!
             </p>
-            <button class="add-btn" onclick="practiceVaultErrors()" id="practiceVaultBtn" style="width: 100%; margin-bottom: 10px; background: #e11d48;">🎯 Practice Saved Mistakes Now</button>
+            <button class="add-btn" onclick="practiceVaultErrors()" id="practiceVaultBtn" style="width: 100%; margin-bottom: 10px; background: #e11d48;">🎯 Practice Saved Mistakes</button>
             <div id="vaultListContainer">
-                <p style="font-size: 11px; color: var(--text-muted); text-align: center; padding: 15px 0;">
-                    No mistakes recorded yet! Keep practicing in the Daily Quiz.
-                </p>
+                <p style="font-size: 11px; color: var(--text-muted); text-align: center; padding: 15px 0;">No mistakes recorded yet!</p>
             </div>
         </div>
     </div>
 
-    <!-- TAB 3: CLASS BATTLE LEAGUE & DAILY QUIZ -->
+    <!-- TAB 3: LEAGUE -->
     <div class="view-content" id="classBattleTab">
         <div class="card-box" style="background: rgba(254, 240, 138, 0.25); border-color: #eab308;">
             <h3 style="color: #854d0e;">🪙 Study Rewards & Free Videos</h3>
             <p style="font-size: 10px; color: var(--text-main); margin-bottom: 6px;">
-                Earn <b>+10 Points</b> per correct answer (Max 5 questions/day). Every <b>100 Points</b> unlocks <b>+1 Free Video</b> & boosts your Class Team!
+                Earn <b>+10 Points</b> per correct answer (Max 5/day). Every <b>100 Points</b> unlocks <b>+1 Free Video</b>!
             </p>
             <div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: bold; color: #854d0e;">
                 <span>Your Points: <span id="battlePointsDisplay">0</span> / 100</span>
-                <span>Daily Limit: <span id="dailyQuestionsDisplay">0</span> / 5 Answered</span>
+                <span>Daily Limit: <span id="dailyQuestionsDisplay">0</span> / 5</span>
             </div>
         </div>
 
@@ -371,26 +370,20 @@
 
         <div class="card-box">
             <h3>🏆 Class Battle Weekly League</h3>
-            <p style="font-size: 10px; color: var(--text-muted); margin-bottom: 8px;">Top team wins <b>+1 Free Month</b> & bonus video credits!</p>
-            
             <div id="leagueStandings">
-                <div class="league-row leader" id="rowAlpha">
+                <div class="league-row leader">
                     <div>🥇 <b>Group Alpha (Your Team)</b></div>
                     <div><b id="alphaScore">420</b> pts</div>
                 </div>
-                <div class="league-row" id="rowBeta">
-                    <div>🥈 <b>Group Beta</b></div>
-                    <div><b id="betaScore">410</b> pts</div>
-                </div>
                 <div class="league-row">
-                    <div>🥉 <b>Group Gamma</b></div>
-                    <div><b>365</b> pts</div>
+                    <div>🥈 <b>Group Beta</b></div>
+                    <div><b>410</b> pts</div>
                 </div>
             </div>
         </div>
 
         <div class="wa-box">
-            <h3 style="font-size: 12px; color: #10b981; margin-bottom: 4px;">📱 Parent WhatsApp Weekly Report</h3>
+            <h3 style="font-size: 12px; color: #10b981; margin-bottom: 4px;">📱 Parent WhatsApp Report</h3>
             <div style="display: flex; gap: 5px;">
                 <input type="text" id="parentPhoneInput" class="wa-input" placeholder="Parent WhatsApp (+961...)">
                 <button class="add-btn" type="button" onclick="linkParentWhatsApp()" style="background: #10b981; margin-top: 5px;">Link</button>
@@ -399,10 +392,10 @@
         </div>
     </div>
 
-    <!-- TAB 4: SCHEDULE VIEW -->
+    <!-- TAB 4: SCHEDULES VIEW -->
     <div class="view-content" id="scheduleTab">
         <div class="card-box">
-            <h3>⏰ Weekly Study Schedule</h3>
+            <h3>⏰ Weekly Study Schedules</h3>
             <div class="schedule-list" id="scheduleListContainer"></div>
             <div class="add-schedule-form">
                 <input type="text" id="newDayInput" placeholder="Day (e.g. Saturday)">
@@ -413,46 +406,46 @@
 
         <div class="card-box">
             <h3>⏳ Official Exams Countdown</h3>
-            <div style="font-size: 11px; color: var(--text-muted);">Brevet / Official Final Exam:</div>
             <div class="countdown-timer">⚠️ 45 Days Remaining (Smart Error Vault Active)</div>
         </div>
     </div>
 
-    <!-- TAB 5: PRICING & LEGAL -->
+    <!-- TAB 5: PLANS & PRICING -->
     <div class="view-content" id="pricingTab">
         <div class="card-box">
-            <h3>💎 Subscription Plans & Fair Quotas</h3>
+            <h3>💎 Subscription Plans & Trial Management</h3>
             <div class="pricing-card">
                 <h4 style="font-size: 12px; color: var(--primary);">Regular Plan - $9.99 / mo</h4>
-                <p style="font-size: 10px; color: var(--text-muted); margin: 4px 0;">120 Deep Lesson Topics, 60 Voice Minutes, & 20 Video Explanations.</p>
-                <button class="add-btn" type="button" onclick="processPayment('Regular Plan', 9.99)">Subscribe via Stripe ($9.99)</button>
+                <p style="font-size: 10px; color: var(--text-muted); margin: 4px 0;">120 Lesson Topics, 60 Voice Mins, 20 Videos.</p>
+                <button class="add-btn" type="button" onclick="processPayment('Regular Plan', 9.99, 'https://buy.stripe.com/test_3cI8wP1zjfm01gf37qgbm00')">Subscribe via Stripe ($9.99)</button>
             </div>
 
             <div class="pricing-card featured">
                 <h4 style="font-size: 12px; color: var(--primary);">Pro Plan - $12.99 / mo</h4>
-                <p style="font-size: 10px; color: var(--text-muted); margin: 4px 0;">250 Lesson Topics, 120 Voice Minutes, 50 Videos, & Exam Bank Rollover.</p>
-                <button class="add-btn" type="button" onclick="processPayment('Pro Plan', 12.99)">Subscribe via Stripe ($12.99)</button>
+                <p style="font-size: 10px; color: var(--text-muted); margin: 4px 0;">250 Lesson Topics, 120 Voice Mins, 50 Videos.</p>
+                <button class="add-btn" type="button" onclick="processPayment('Pro Plan', 12.99, 'https://buy.stripe.com/test_5kQdR9em5ehW4sr23mgbm01')">Subscribe via Stripe ($12.99)</button>
             </div>
         </div>
 
         <div class="card-box">
-            <h3>⚡ Instant Credit Top-Up Packs</h3>
-            <div style="display: flex; flex-direction: column; gap: 6px;">
-                <button class="add-btn" style="background: #10b981;" onclick="processPayment('Small Top-Up (+30 Lessons, +5 Video)', 2.99)">Small Pack ($2.99) - +30 Lessons, +5 Video</button>
-                <button class="add-btn" style="background: #10b981;" onclick="processPayment('Medium Top-Up (+60 Lessons, +12 Video)', 4.99)">Medium Pack ($4.99) - +60 Lessons, +12 Video</button>
+            <h3>🎟️ Manual Trial Token Activation</h3>
+            <p style="font-size: 10px; color: var(--text-muted); margin-bottom: 6px;">Enter a student trial code to instantly unlock Pro access:</p>
+            <div style="display: flex; gap: 5px;">
+                <input type="text" id="manualTrialInput" class="auth-input" placeholder="e.g. TRIAL-STUDENT-2026">
+                <button class="add-btn" type="button" onclick="redeemManualTrial()" style="background: #10b981;">Activate</button>
             </div>
         </div>
 
         <div class="card-box">
             <h3>📄 Legal & Fair Use</h3>
             <p style="font-size: 10px; color: var(--text-muted); line-height: 1.4;">
-                Operated by <b>Distingstyle Ltd</b> (UK). Shared Lesson Caching is active to optimize student costs & performance. Max 2 active devices per account.
+                Operated by <b>Distingstyle Ltd</b> (UK). Status: Stripe Account Verified. Max 2 active devices per account.
             </p>
         </div>
     </div>
 
     <div class="footer-powered">
-        Study Flow • Operated by Distingstyle Ltd © 2026
+        Study Flow • Owned by Distingstyle Ltd © 2026
     </div>
 </div>
 
@@ -469,14 +462,12 @@
     let dailyQuestionsAnswered = 0;
     const MAX_DAILY_QUESTIONS = 5;
     let errorVault = [];
-    let chatHistory = [];
+    let isRecording = false;
 
     const dailyQuestionsPool = [
-        { q: "What is the derivative of f(x) = x²?", options: ["2x", "x", "x²"], correct: 0, explanation: "Using the power rule d/dx(x^n) = n*x^(n-1), the derivative of x² is 2x." },
-        { q: "What is the chemical symbol for Water?", options: ["CO2", "H2O", "O2"], correct: 1, explanation: "Water consists of two Hydrogen atoms and one Oxygen atom (H2O)." },
-        { q: "According to Newton's 2nd Law, Force equals:", options: ["Mass × Velocity", "Mass × Acceleration", "Energy / Time"], correct: 1, explanation: "F = m × a (Force equals mass multiplied by acceleration)." },
-        { q: "Solve for x: 2x + 6 = 14", options: ["x = 3", "x = 4", "x = 5"], correct: 1, explanation: "Subtract 6 from both sides: 2x = 8, then divide by 2: x = 4." },
-        { q: "Which organelle is the powerhouse of the cell?", options: ["Nucleus", "Ribosome", "Mitochondria"], correct: 2, explanation: "Mitochondria generate most of the chemical energy (ATP) needed to power the cell." }
+        { q: "What is the derivative of f(x) = x²?", options: ["2x", "x", "x²"], correct: 0, explanation: "Using power rule, derivative of x² is 2x." },
+        { q: "What is the chemical symbol for Water?", options: ["CO2", "H2O", "O2"], correct: 1, explanation: "Water is H2O." },
+        { q: "According to Newton's 2nd Law, Force equals:", options: ["Mass × Velocity", "Mass × Acceleration", "Energy / Time"], correct: 1, explanation: "F = m × a." }
     ];
 
     let scheduleItems = [
@@ -494,258 +485,6 @@
         document.getElementById('dailyQuestionsDisplay').textContent = dailyQuestionsAnswered;
         document.getElementById('alphaScore').textContent = alphaTeamScore;
         document.getElementById('vaultBadge').textContent = errorVault.length;
-
-        const quizBtn = document.getElementById('startQuizBtn');
-        if (dailyQuestionsAnswered >= MAX_DAILY_QUESTIONS) {
-            quizBtn.textContent = "✅ Daily Limit Reached (5/5) - Come back tomorrow!";
-            quizBtn.disabled = true;
-        } else {
-            quizBtn.textContent = `Start Daily Question (${dailyQuestionsAnswered + 1}/${MAX_DAILY_QUESTIONS}) 🚀`;
-            quizBtn.disabled = false;
-        }
-    }
-
-    function detectLanguage(text) {
-        if (/[\u0600-\u06FF]/.test(text)) return 'ar';
-        if (/\b(le|la|les|des|est|pour|dans|avec|comment|pourquoi|calculer|exercice|cours)\b/i.test(text)) return 'fr';
-        return 'en';
-    }
-
-    function notifyLanguageChange() {
-        const lang = document.getElementById('explainLangSelect').value;
-        let msg = "";
-        if (lang === 'auto') msg = "🔄 Explanation language set to <b>Auto (Same as Lesson)</b>.";
-        if (lang === 'ar') msg = "🇱🇧 تم تحويل لغة الشرح إلى <b>العربية</b>.";
-        if (lang === 'en') msg = "🇬🇧 Explanation language switched to <b>English</b>.";
-        if (lang === 'fr') msg = "🇫🇷 Langue d'explication changée en <b>Français</b>.";
-
-        appendMessageToChat('system', msg);
-    }
-
-    function speakText(text, langCode = 'en-US') {
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = langCode;
-            utterance.rate = 0.95;
-            window.speechSynthesis.speak(utterance);
-        } else {
-            alert("Voice playback is not supported in this browser.");
-        }
-    }
-
-    let isRecording = false;
-    function toggleVoiceInput() {
-        const micBtn = document.getElementById('micBtn');
-        const userInput = document.getElementById('userInput');
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!SpeechRecognition) {
-            alert("Voice input is not supported in this browser.");
-            return;
-        }
-
-        if (!isRecording) {
-            const selectedLang = document.getElementById('explainLangSelect').value;
-            const recognition = new SpeechRecognition();
-            recognition.lang = selectedLang === 'ar' ? 'ar-LB' : (selectedLang === 'fr' ? 'fr-FR' : 'en-US');
-            recognition.start();
-            isRecording = true;
-            micBtn.classList.add('mic-recording');
-            userInput.placeholder = "Listening...";
-
-            recognition.onresult = function(event) {
-                userInput.value = event.results[0][0].transcript;
-                isRecording = false;
-                micBtn.classList.remove('mic-recording');
-                userInput.placeholder = "Ask in any language...";
-            };
-            recognition.onerror = function() {
-                isRecording = false;
-                micBtn.classList.remove('mic-recording');
-                userInput.placeholder = "Ask in any language...";
-            };
-        }
-    }
-
-    function appendMessageToChat(sender, htmlContent, saveToStorage = true) {
-        const chatBox = document.getElementById('chatBox');
-        let rowClass = sender === 'user' ? 'user' : (sender === 'system' ? 'system-msg' : 'ai');
-        
-        if (sender === 'system') {
-            chatBox.innerHTML += `<div style="text-align:center; font-size:10px; color:var(--primary); margin:4px 0;">${htmlContent}</div>`;
-        } else {
-            chatBox.innerHTML += `
-                <div class="message-row ${rowClass}">
-                    <div class="message-bubble">${htmlContent}</div>
-                </div>
-            `;
-        }
-        chatBox.scrollTop = chatBox.scrollHeight;
-
-        if (saveToStorage) {
-            chatHistory.push({ sender, htmlContent });
-            localStorage.setItem('studyFlowCachedChat', JSON.stringify(chatHistory));
-        }
-    }
-
-    function sendQuickSummary(topicLang) {
-        let summaryHtml = "";
-        if (topicLang === 'ar') {
-            summaryHtml = "⚡ <b>خلاصة الدرس في 3 نقاط ذهبية:</b><br>1. فهم القاعدة الأساسية وتحديد المعطيات.<br>2. تطبيق القانون خطوة بخطوة مع الانتباه للوحدات.<br>3. التحقق من النتيجة النهائية ومقارنتها بالمنطق العلمي.";
-        } else if (topicLang === 'fr') {
-            summaryHtml = "⚡ <b>Résumé rapide en 3 points clés :</b><br>1. Identifier les données principales.<br>2. Appliquer la formule étape par étape.<br>3. Vérifier le résultat final.";
-        } else {
-            summaryHtml = "⚡ <b>3-Point Golden Summary:</b><br>1. Identify given variables.<br>2. Apply core formula step-by-step.<br>3. Verify final answer.";
-        }
-        appendMessageToChat('ai', summaryHtml);
-    }
-
-    function sendMessage() {
-        const input = document.getElementById('userInput');
-        const text = input.value.trim();
-        if (!text && !attachedImage) return;
-
-        const isArabicInput = detectLanguage(text) === 'ar';
-        const userHtml = `<div dir="${isArabicInput ? 'rtl' : 'ltr'}">${text || '📷 [Attached Lesson Image]'}</div>`;
-        appendMessageToChat('user', userHtml);
-        input.value = '';
-        attachedImage = null;
-
-        const selectedPref = document.getElementById('explainLangSelect').value;
-        const targetLang = selectedPref === 'auto' ? detectLanguage(text) : selectedPref;
-
-        let aiReply = "";
-        let voiceLang = "en-US";
-        let dir = "ltr";
-
-        if (targetLang === 'ar') {
-            dir = "rtl";
-            voiceLang = "ar-SA";
-            aiReply = "إليك الشرح المفصل للدرس خطوة بخطوة باللغة العربية مع الحفاظ على المصطلحات العلمية كما وردت في درسك!";
-        } else if (targetLang === 'fr') {
-            voiceLang = "fr-FR";
-            aiReply = "Voici l'explication détaillée de votre cours étape par étape en français.";
-        } else {
-            voiceLang = "en-US";
-            aiReply = "Here is the clear step-by-step explanation for your lesson topic.";
-        }
-
-        setTimeout(() => {
-            const aiHtml = `
-                <div dir="${dir}">
-                    ${aiReply}
-                    <div class="bubble-actions">
-                        <button class="voice-listen-btn" onclick="speakText('${aiReply.replace(/'/g, "\\'")}', '${voiceLang}')">🔊 Listen Voice</button>
-                        <button class="voice-listen-btn" style="background: rgba(234, 179, 8, 0.15); border-color: #eab308; color: #854d0e;" onclick="sendQuickSummary('${targetLang}')">⚡ Quick Summary</button>
-                    </div>
-                </div>
-            `;
-            appendMessageToChat('ai', aiHtml);
-        }, 600);
-    }
-
-    function renderErrorVault() {
-        const container = document.getElementById('vaultListContainer');
-        if (errorVault.length === 0) {
-            container.innerHTML = `<p style="font-size: 11px; color: var(--text-muted); text-align: center; padding: 15px 0;">No mistakes recorded yet! Great job!</p>`;
-            return;
-        }
-        container.innerHTML = errorVault.map((item, idx) => `
-            <div class="vault-item">
-                <div style="font-weight: bold; color: #e11d48; margin-bottom: 3px;">❌ Mistake #${idx + 1}: ${item.q}</div>
-                <div style="color: var(--text-main); margin-bottom: 4px;">✅ <b>Correct Answer:</b> ${item.options[item.correct]}</div>
-                <div style="font-size: 10px; color: var(--text-muted);">💡 ${item.explanation}</div>
-                <button class="add-btn" style="margin-top: 5px; background: #10b981; font-size: 9px;" onclick="markMastered(${idx})">Mark as Mastered ✓</button>
-            </div>
-        `).join('');
-    }
-
-    function markMastered(index) {
-        errorVault.splice(index, 1);
-        renderErrorVault();
-        updateStatsUI();
-    }
-
-    function practiceVaultErrors() {
-        if (errorVault.length === 0) {
-            alert("Your Error Vault is currently empty!");
-            return;
-        }
-        const item = errorVault[0];
-        const answer = prompt(`Quick Revision:\n\n${item.q}\nOptions: ${item.options.join(' | ')}\n\nType correct answer:`);
-        if (answer && answer.toLowerCase().trim() === item.options[item.correct].toLowerCase().trim()) {
-            alert("🎉 Mastered and cleared from your vault!");
-            markMastered(0);
-        } else if (answer !== null) {
-            alert(`Not quite! Remember: ${item.explanation}`);
-        }
-    }
-
-    function loadNextDailyQuestion() {
-        if (dailyQuestionsAnswered >= MAX_DAILY_QUESTIONS) return;
-        const qObj = dailyQuestionsPool[dailyQuestionsAnswered];
-        const area = document.getElementById('classQuizArea');
-        area.style.display = 'block';
-        let buttonsHtml = qObj.options.map((opt, idx) => 
-            `<button class="quiz-btn" onclick="submitDailyAnswer(${idx})">${String.fromCharCode(65 + idx)}) ${opt}</button>`
-        ).join('');
-        area.innerHTML = `
-            <div style="font-size:11px; font-weight:bold; margin-bottom:5px; color: var(--primary);">Question ${dailyQuestionsAnswered + 1} (+10 Pts):</div>
-            <div style="font-size:11px; margin-bottom:6px;">${qObj.q}</div>
-            ${buttonsHtml}
-        `;
-    }
-
-    function submitDailyAnswer(selectedIdx) {
-        const qObj = dailyQuestionsPool[dailyQuestionsAnswered];
-        dailyQuestionsAnswered++;
-        document.getElementById('classQuizArea').style.display = 'none';
-
-        if (selectedIdx === qObj.correct) {
-            userPoints += 10;
-            alphaTeamScore += 10;
-            if (userPoints >= 100) {
-                userPoints -= 100;
-                videoCredits += 1;
-                alert("🎉 JACKPOT! Reached 100 Points -> Unlocked +1 FREE VIDEO!");
-            } else {
-                alert(`✅ Correct! +10 Points earned.`);
-            }
-        } else {
-            errorVault.push(qObj);
-            renderErrorVault();
-            alert(`❌ Incorrect! Saved to your 🧠 Smart Error Vault.`);
-        }
-        updateStatsUI();
-    }
-
-    async function processPayment(planName, price) {
-        try {
-            const response = await fetch('/create-checkout-session', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ plan: planName, amount: price })
-            });
-            const data = await response.json();
-            if (response.ok && data.url) window.location.href = data.url;
-            else alert('Stripe Error: ' + (data.error || 'Unknown error'));
-        } catch (error) {
-            alert('Could not connect to payment server.');
-        }
-    }
-
-    function buyTopUpOnline() {
-        const select = document.getElementById('topUpPackageSelect');
-        processPayment(`Top-Up`, parseFloat(select.value));
-    }
-
-    function submitPrepaidTopUp() {
-        const code = document.getElementById('prepaidCodeInput').value.trim();
-        if (!code) { alert('Enter a valid code.'); return; }
-        textCredits += 60; voiceCredits += 30; videoCredits += 12;
-        updateStatsUI();
-        alert('✅ Code redeemed! Quotas updated.');
-        closeTopUpModal();
     }
 
     function switchTab(tabId, btn) {
@@ -755,91 +494,322 @@
         btn.classList.add('active');
     }
 
-    function changeTheme() { document.body.setAttribute('data-theme', document.getElementById('themeSelect').value); }
-    function togglePassword(id, btn) {
-        const input = document.getElementById(id);
-        input.type = input.type === 'password' ? 'text' : 'password';
-        btn.textContent = input.type === 'password' ? '👁️' : '🔒';
+    function changeTheme() {
+        const theme = document.getElementById('themeSelect').value;
+        document.body.setAttribute('data-theme', theme);
     }
+
+    function togglePassword(fieldId, btn) {
+        const input = document.getElementById(fieldId);
+        if (input.type === "password") {
+            input.type = "text";
+            btn.textContent = "🙈";
+        } else {
+            input.type = "password";
+            btn.textContent = "👁️";
+        }
+    }
+
     function toggleAuthMode() {
         isRegisterMode = !isRegisterMode;
-        document.getElementById('authTitle').textContent = isRegisterMode ? 'Study Flow - Sign Up' : 'Study Flow';
-        document.getElementById('authSubmitBtn').textContent = isRegisterMode ? 'Sign Up & Verify' : 'Sign In';
-        document.getElementById('confirmPassGroup').style.display = isRegisterMode ? 'flex' : 'none';
+        const title = document.getElementById('authTitle');
+        const sub = document.getElementById('authSub');
+        const submitBtn = document.getElementById('authSubmitBtn');
+        const toggleBtn = document.getElementById('toggleAuthBtn');
+        const confirmGroup = document.getElementById('confirmPassGroup');
+        const trialGroup = document.getElementById('trialTokenGroup');
+
+        if (isRegisterMode) {
+            title.textContent = "Create Account";
+            sub.textContent = "Sign up for Study Flow";
+            submitBtn.textContent = "Register & Start";
+            toggleBtn.textContent = "Already have an account? Sign In";
+            confirmGroup.style.display = "flex";
+            trialGroup.style.display = "block";
+        } else {
+            title.textContent = "Study Flow";
+            sub.textContent = "Sign in to your account";
+            submitBtn.textContent = "Sign In";
+            toggleBtn.textContent = "Don't have an account? Sign Up";
+            confirmGroup.style.display = "none";
+            trialGroup.style.display = "none";
+        }
     }
 
-    // Full Remember Me (Email & Password) Logic
     function handleAuthSubmit() {
         const email = document.getElementById('authEmail').value.trim();
-        const pass = document.getElementById('authPass').value.trim();
-        const rememberMe = document.getElementById('rememberMeCheck').checked;
+        const pass = document.getElementById('authPass').value;
+        const trialToken = document.getElementById('trialTokenInput').value.trim();
 
-        if (!email || !pass) { alert('Enter email and password.'); return; }
-
-        if (rememberMe) {
-            localStorage.setItem('studyFlowEmail', email);
-            localStorage.setItem('studyFlowPass', pass);
-        } else {
-            localStorage.removeItem('studyFlowEmail');
-            localStorage.removeItem('studyFlowPass');
+        if (!email || !pass) {
+            alert("Please enter both email and password.");
+            return;
         }
+
+        if (trialToken) {
+            if (trialToken.startsWith("TRIAL-")) {
+                textCredits = 250;
+                voiceCredits = 120;
+                videoCredits = 50;
+                alert("🎉 Trial Token verified! Pro Plan features unlocked successfully.");
+            } else {
+                alert("⚠️ Invalid trial token code, logging in with standard account.");
+            }
+        }
+
         document.getElementById('authOverlay').style.display = 'none';
+        appendMessageToChat('ai', `👋 Welcome! Connected as <b>${email}</b>. How can I help you study today?`);
+        updateStatsUI();
+        renderSchedule();
     }
 
-    function handleForgotPassword(e) { e.preventDefault(); alert('Password reset link sent.'); }
+    function handleForgotPassword(e) {
+        e.preventDefault();
+        alert("Password reset instructions sent.");
+    }
+
     function openTopUpModal() { document.getElementById('topUpModal').style.display = 'flex'; }
     function closeTopUpModal() { document.getElementById('topUpModal').style.display = 'none'; }
 
-    function renderSchedule() {
-        document.getElementById('scheduleListContainer').innerHTML = scheduleItems.map((item, index) => `
-            <div class="schedule-row-item">
-                <span><b>${item.day}:</b> ${item.task}</span>
-                <button class="add-btn" style="background:#e11d48; padding:2px 5px; font-size:9px;" onclick="removeScheduleItem(${index})">X</button>
-            </div>
-        `).join('');
+    function buyTopUpOnline() {
+        const sel = document.getElementById('topUpPackageSelect').value;
+        window.location.href = "https://buy.stripe.com/test_3cI8wP1zjfm01gf37qgbm00";
     }
+
+    function submitPrepaidTopUp() {
+        const code = document.getElementById('prepaidCodeInput').value.trim();
+        if(!code) { alert("Please enter a prepaid code."); return; }
+        textCredits += 60;
+        voiceCredits += 30;
+        videoCredits += 12;
+        updateStatsUI();
+        alert("🎉 Prepaid code redeemed successfully! Credits added.");
+        closeTopUpModal();
+    }
+
+    function processPayment(planName, price, stripeLink) {
+        alert(`Redirecting to Stripe Secure Checkout for ${planName} ($${price})...`);
+        window.location.href = stripeLink;
+    }
+
+    function redeemManualTrial() {
+        const code = document.getElementById('manualTrialInput').value.trim();
+        if (code.startsWith("TRIAL-")) {
+            textCredits = 250;
+            voiceCredits = 120;
+            videoCredits = 50;
+            updateStatsUI();
+            alert("🎉 Success! Pro Plan unlocked via Manual Trial Token.");
+        } else {
+            alert("❌ Invalid Trial Token code.");
+        }
+    }
+
+    function notifyLanguageChange() {
+        const lang = document.getElementById('explainLangSelect').value;
+        console.log("Language changed to:", lang);
+    }
+
+    function appendMessageToChat(sender, htmlContent, hasAudio=false) {
+        const box = document.getElementById('chatBox');
+        const row = document.createElement('div');
+        row.className = `message-row ${sender}`;
+        
+        let audioBtnHtml = '';
+        if(hasAudio) {
+            audioBtnHtml = `<div class="bubble-actions"><button class="voice-listen-btn" onclick="playAudioResponse(this)">🔊 Listen (Voice)</button></div>`;
+        }
+
+        row.innerHTML = `<div class="message-bubble">${htmlContent}${audioBtnHtml}</div>`;
+        box.appendChild(row);
+        box.scrollTop = box.scrollHeight;
+    }
+
+    function playAudioResponse(btn) {
+        btn.textContent = "🔊 Playing Audio...";
+        setTimeout(() => { btn.textContent = "🔊 Listen (Voice)"; }, 2500);
+    }
+
+    function handleFileSelect(event) {
+        const file = event.target.files[0];
+        if (file) {
+            attachedImage = file.name;
+            appendMessageToChat('user', `📎 Attached lesson file: <b>${file.name}</b>`);
+            setTimeout(() => {
+                appendMessageToChat('ai', `✅ Received your lesson attachment <b>${file.name}</b>! Analyzing contents... What specific topic or problem would you like explained?`, true);
+            }, 600);
+        }
+    }
+
+    function toggleVoiceInput() {
+        const btn = document.getElementById('micBtn');
+        isRecording = !isRecording;
+        if(isRecording) {
+            btn.classList.add('mic-recording');
+            btn.textContent = "⏹️";
+            document.getElementById('userInput').placeholder = "Listening to your voice question...";
+        } else {
+            btn.classList.remove('mic-recording');
+            btn.textContent = "🎤";
+            document.getElementById('userInput').placeholder = "Ask in any language...";
+            document.getElementById('userInput').value = "Explain the last formula from the uploaded lesson.";
+            sendMessage();
+        }
+    }
+
+    function handleKey(e) {
+        if(e.key === 'Enter') sendMessage();
+    }
+
+    function sendMessage() {
+        const input = document.getElementById('userInput');
+        const text = input.value.trim();
+        if(!text && !attachedImage) return;
+
+        const useVoice = document.getElementById('fmtVoice').checked;
+        const useVideo = document.getElementById('fmtVideo').checked;
+
+        appendMessageToChat('user', text || `Uploaded lesson image (${attachedImage})`);
+        input.value = '';
+        attachedImage = null;
+
+        if(textCredits > 0) textCredits--;
+        if(useVoice && voiceCredits > 0) voiceCredits--;
+        if(useVideo && videoCredits > 0) videoCredits--;
+        updateStatsUI();
+
+        setTimeout(() => {
+            let reply = `Here is a clear step-by-step breakdown of your question: <b>"${text || 'Uploaded Lesson'}"</b>.<br><br>` +
+                        `1. Identify core given parameters.<br>` +
+                        `2. Apply relevant formula principles.<br>` +
+                        `3. Derive final solution accurately.`;
+            if(useVoice) reply += `<br><br>🎙️ <i>[Voice explanation generated and ready]</i>`;
+            if(useVideo) reply += `<br><br>🎬 <i>[Short video breakdown generated]</i>`;
+            
+            appendMessageToChat('ai', reply, useVoice);
+        }, 800);
+    }
+
+    function renderSchedule() {
+        const container = document.getElementById('scheduleListContainer');
+        container.innerHTML = '';
+        scheduleItems.forEach((item, index) => {
+            const div = document.createElement('div');
+            div.className = 'schedule-row-item';
+            div.innerHTML = `<span>📅 <b>${item.day}</b>: ${item.task}</span> <button onclick="removeSchedule(${index})" style="background:none;border:none;color:#ef4444;cursor:pointer;">❌</button>`;
+            container.appendChild(div);
+        });
+    }
+
     function addScheduleItem() {
         const day = document.getElementById('newDayInput').value.trim();
         const task = document.getElementById('newTaskInput').value.trim();
-        if (day && task) { scheduleItems.push({ day, task }); document.getElementById('newDayInput').value = ''; document.getElementById('newTaskInput').value = ''; renderSchedule(); }
-    }
-    function removeScheduleItem(index) { scheduleItems.splice(index, 1); renderSchedule(); }
-    function linkParentWhatsApp() { if (document.getElementById('parentPhoneInput').value.trim()) document.getElementById('waStatus').style.display = 'block'; }
-    function handleKey(e) { if (e.key === 'Enter') sendMessage(); }
-    function handleFileSelect(e) { if (e.target.files[0]) { attachedImage = e.target.files[0]; alert('Attached: ' + attachedImage.name); } }
-
-    window.onload = function() {
+        if(!day || !task) { alert("Please enter both day and subject/task."); return; }
+        scheduleItems.push({ day, task });
+        document.getElementById('newDayInput').value = '';
+        document.getElementById('newTaskInput').value = '';
         renderSchedule();
-        renderErrorVault();
+    }
+
+    function removeSchedule(index) {
+        scheduleItems.splice(index, 1);
+        renderSchedule();
+    }
+
+    function linkParentWhatsApp() {
+        const phone = document.getElementById('parentPhoneInput').value.trim();
+        if(!phone) { alert("Please enter a valid WhatsApp phone number."); return; }
+        document.getElementById('waStatus').style.display = 'block';
+        alert(`🎉 Successfully linked parent WhatsApp (${phone})! Weekly progress reports will now be dispatched automatically.`);
+    }
+
+    function loadNextDailyQuestion() {
+        if(dailyQuestionsAnswered >= MAX_DAILY_QUESTIONS) {
+            alert("You have completed all 5 daily questions for today! Come back tomorrow.");
+            return;
+        }
+
+        const area = document.getElementById('classQuizArea');
+        area.style.display = 'block';
+        document.getElementById('startQuizBtn').style.display = 'none';
+
+        const qObj = dailyQuestionsPool[dailyQuestionsAnswered % dailyQuestionsPool.length];
+        
+        let html = `<p style="font-size:11px; font-weight:600; margin-bottom:6px;">Q${dailyQuestionsAnswered+1}: ${qObj.q}</p><div style="display:flex; flex-direction:column; gap:4px;">`;
+        qObj.options.forEach((opt, idx) => {
+            html += `<button class="add-btn" style="text-align:left; background:var(--card-bg); color:var(--text-main); border:1px solid var(--border);" onclick="submitQuizAnswer(${idx}, ${qObj.correct}, '${qObj.explanation.replace(/'/g, "\\'")}', '${qObj.q.replace(/'/g, "\\'")}')">${idx+1}. ${opt}</button>`;
+        });
+        html += `</div>`;
+        area.innerHTML = html;
+    }
+
+    function submitQuizAnswer(selected, correct, explanation, questionText) {
+        const area = document.getElementById('classQuizArea');
+        dailyQuestionsAnswered++;
+        
+        if(selected === correct) {
+            userPoints += 10;
+            alphaTeamScore += 10;
+            area.innerHTML = `<p style="font-size:11px; color:#10b981; font-weight:bold;">✅ Correct! +10 Points earned.</p><p style="font-size:10px; margin-top:4px;">${explanation}</p>`;
+        } else {
+            errorVault.push({ q: questionText, exp: explanation });
+            area.innerHTML = `<p style="font-size:11px; color:#ef4444; font-weight:bold;">❌ Incorrect.</p><p style="font-size:10px; margin-top:4px;">${explanation}</p><p style="font-size:9px; color:#e11d48; margin-top:2px;">⚠️ Question automatically saved to your Smart Error Vault!</p>`;
+        }
+
+        if(userPoints >= 100) {
+            userPoints -= 100;
+            videoCredits += 1;
+            alert("🎉 Milestone reached! 100 points collected: +1 Free Video unlocked!");
+        }
+
         updateStatsUI();
 
-        // Restore Remember Me (Email & Password)
-        const savedEmail = localStorage.getItem('studyFlowEmail');
-        const savedPass = localStorage.getItem('studyFlowPass');
-        if (savedEmail && savedPass) {
-            document.getElementById('authEmail').value = savedEmail;
-            document.getElementById('authPass').value = savedPass;
-            document.getElementById('rememberMeCheck').checked = true;
-        }
+        setTimeout(() => {
+            area.style.display = 'none';
+            document.getElementById('startQuizBtn').style.display = 'block';
+            if(dailyQuestionsAnswered < MAX_DAILY_QUESTIONS) {
+                document.getElementById('startQuizBtn').textContent = `Start Daily Question (${dailyQuestionsAnswered+1}/5) 🚀`;
+            } else {
+                document.getElementById('startQuizBtn').textContent = `Completed Today's Quiz (5/5) ✅`;
+                document.getElementById('startQuizBtn').disabled = true;
+            }
+            renderVaultList();
+        }, 3000);
+    }
 
-        // Restore Cached Chat History (Saves API Costs & Time during exams)
-        const cachedChat = localStorage.getItem('studyFlowCachedChat');
-        if (cachedChat) {
-            chatHistory = JSON.parse(cachedChat);
-            const chatBox = document.getElementById('chatBox');
-            chatBox.innerHTML = '';
-            chatHistory.forEach(item => {
-                appendMessageToChat(item.sender, item.htmlContent, false);
-            });
-        } else {
-            // Default welcome message
-            appendMessageToChat('ai', `
-                👋 Welcome to <b>Study Flow</b>! All your lesson history is automatically cached locally to save your time and bandwidth during exams.
-                <div class="bubble-actions">
-                    <button class="voice-listen-btn" onclick="speakText('Welcome to Study Flow!')">🔊 Listen Voice</button>
-                </div>
-            `, false);
+    function renderVaultList() {
+        const container = document.getElementById('vaultListContainer');
+        if(errorVault.length === 0) {
+            container.innerHTML = `<p style="font-size: 11px; color: var(--text-muted); text-align: center; padding: 15px 0;">No mistakes recorded yet!</p>`;
+            return;
         }
+        container.innerHTML = '';
+        errorVault.forEach((item, idx) => {
+            const div = document.createElement('div');
+            div.className = 'schedule-row-item';
+            div.innerHTML = `<span>❌ <b>${item.q}</b></span> <button onclick="removeVaultItem(${idx})" style="background:none;border:none;color:var(--primary);cursor:pointer;font-size:10px;">Mastered ✓</button>`;
+            container.appendChild(div);
+        });
+    }
+
+    function removeVaultItem(idx) {
+        errorVault.splice(idx, 1);
+        renderVaultList();
+        updateStatsUI();
+    }
+
+    function practiceVaultErrors() {
+        if(errorVault.length === 0) {
+            alert("Your Error Vault is empty! No mistakes to practice right now.");
+            return;
+        }
+        alert(`🧠 Launching Smart Practice Session for your ${errorVault.length} saved mistake(s)...`);
+    }
+
+    window.onload = function() {
+        updateStatsUI();
+        renderSchedule();
+        renderVaultList();
     };
 </script>
 </body>
