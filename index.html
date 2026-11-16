@@ -1,816 +1,1248 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Study Flow - AI Educational Assistant</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-            --card-bg: #ffffff;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --primary: #0f766e;
-            --primary-hover: #0d9488;
-            --border: #cbd5e1;
-            --user-bubble: #0f766e;
-            --user-text: #ffffff;
-            --ai-bubble: #f1f5f9;
-            --ai-text: #1e293b;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Study Flow — AI Educational Assistant</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary: #0f766e;
+      --primary-dark: #115e59;
+      --primary-light: #ccfbf1;
+      --accent: #f59e0b;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --danger: #ef4444;
+      --success: #10b981;
+    }
 
-        [data-theme="dark"] {
-            --bg-gradient: linear-gradient(135deg, #020617 0%, #0f172a 100%);
-            --card-bg: #0f172a;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --primary: #14b8a6;
-            --primary-hover: #0d9488;
-            --border: #334155;
-            --user-bubble: #14b8a6;
-            --user-text: #020617;
-            --ai-bubble: #1e293b;
-            --ai-text: #f8fafc;
-        }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        [data-theme="focus"] {
-            --bg-gradient: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-            --card-bg: #f7fee7;
-            --text-main: #166534;
-            --text-muted: #15803d;
-            --primary: #15803d;
-            --primary-hover: #166534;
-            --border: #bbf7d0;
-            --user-bubble: #15803d;
-            --user-text: #ffffff;
-            --ai-bubble: #dcfce7;
-            --ai-text: #14532d;
-        }
+    body {
+      font-family: 'Inter', 'Cairo', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+    body[dir="rtl"] { font-family: 'Cairo', 'Inter', sans-serif; }
 
-        body {
-            font-family: 'Inter', 'Cairo', sans-serif;
-            background: var(--bg-gradient);
-            color: var(--text-main);
-            height: 100vh;
-            height: 100dvh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            transition: background 0.4s ease;
-        }
+    /* Auth & Modals Overlay */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.72);
+      backdrop-filter: blur(5px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 1000;
+    }
+    .hidden { display: none !important; }
 
-        #authOverlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6); backdrop-filter: blur(5px);
-            display: flex; justify-content: center; align-items: center; z-index: 1000;
-            padding: 10px;
-        }
-        .auth-card {
-            background: var(--card-bg); padding: 16px; border-radius: 16px;
-            width: 100%; max-width: 380px; max-height: 92vh; overflow-y: auto;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            display: flex; flex-direction: column; gap: 8px;
-        }
-        .auth-card h2 { font-size: 16px; color: var(--primary); text-align: center; }
-        .auth-input { width: 100%; padding: 8px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text-main); font-size: 11px; outline: none; }
-        .password-container { position: relative; display: flex; align-items: center; width: 100%; }
-        .password-container input { width: 100%; padding-right: 30px; }
-        .eye-btn { position: absolute; right: 8px; background: none; border: none; cursor: pointer; font-size: 13px; color: var(--text-muted); }
-        
-        .auth-btn { width: 100%; padding: 8px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px; }
-        
-        #topUpModal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
-            display: none; justify-content: center; align-items: center; z-index: 1100;
-        }
-        .modal-card {
-            background: var(--card-bg); padding: 20px; border-radius: 16px;
-            width: 90%; max-width: 340px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            display: flex; flex-direction: column; gap: 10px;
-        }
+    .modal-card {
+      background: var(--card);
+      width: 100%;
+      max-width: 440px;
+      border-radius: 18px;
+      padding: 26px;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.22);
+      animation: popIn 0.22s ease;
+    }
 
-        .app-container {
-            width: 100%; max-width: 450px; height: 100%; background: var(--card-bg);
-            display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
+    @keyframes popIn {
+      from { transform: scale(0.95); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
 
-        @media (min-width: 451px) {
-            .app-container { height: 92vh; border-radius: 24px; border: 1px solid var(--border); }
-        }
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+    .brand-badge {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: #fff;
+      font-weight: 800;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .micro-brand {
+      font-size: 11px;
+      color: var(--muted);
+      text-align: center;
+      letter-spacing: 0.2px;
+    }
 
-        .app-header {
-            padding: 10px 16px; display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid var(--border); background: var(--card-bg);
-        }
-        .logo-area { display: flex; align-items: center; gap: 10px; }
-        .logo-icon { 
-            width: 36px; height: 36px; background: var(--primary); color: white; 
-            display: flex; align-items: center; justify-content: center; border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(15, 118, 110, 0.3); flex-shrink: 0;
-        }
-        .logo-text h1 { font-size: 14px; font-weight: 700; color: var(--text-main); line-height: 1.1; }
-        .logo-text span { font-size: 9px; color: var(--text-muted); display: block; margin-top: 1px; }
+    .input-group { margin-bottom: 14px; }
+    .input-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+    .input-group input, .input-group select, .input-group textarea {
+      width: 100%;
+      padding: 11px 13px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      transition: border 0.2s;
+      background: #fff;
+    }
+    .input-group input:focus, .input-group select:focus, .input-group textarea:focus {
+      border-color: var(--primary);
+    }
 
-        .theme-select { padding: 4px 6px; border-radius: 6px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text-main); font-size: 10px; cursor: pointer; }
+    .btn {
+      width: 100%;
+      padding: 12px 16px;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-accent { background: var(--accent); color: #fff; }
+    .btn-accent:hover { filter: brightness(0.95); }
+    .btn-success { background: var(--success); color: #fff; }
+    .btn-outline {
+      background: transparent;
+      border: 1.5px solid var(--border);
+      color: var(--text);
+    }
+    .btn-outline:hover { background: #f8fafc; }
+    .btn-sm { padding: 7px 12px; font-size: 12px; width: auto; border-radius: 8px; }
 
-        .nav-tabs { display: flex; background: rgba(0,0,0,0.03); border-bottom: 1px solid var(--border); overflow-x: auto; }
-        .tab-btn { flex: 1; padding: 8px 6px; text-align: center; font-size: 10px; font-weight: 600; color: var(--text-muted); background: none; border: none; cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; }
-        .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); background: var(--card-bg); }
+    /* App Container */
+    .app-shell {
+      max-width: 980px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 14px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
 
-        .view-content { flex: 1; overflow-y: auto; display: none; flex-direction: column; padding: 14px; }
-        .view-content.active { display: flex; }
+    /* Top Header */
+    .topbar {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 14px 18px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border: 1px solid var(--border);
+    }
+    .topbar-left { display: flex; align-items: center; gap: 12px; }
+    .plan-pill {
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 999px;
+      text-transform: uppercase;
+    }
+    .topbar-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 
-        .stats-bar { background: rgba(0, 0, 0, 0.02); padding: 6px 10px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); font-size: 10px; font-weight: 500; color: var(--text-muted); overflow-x: auto; white-space: nowrap; gap: 4px; }
-        .stat-badge { background: var(--card-bg); padding: 2px 5px; border-radius: 4px; border: 1px solid var(--border); color: var(--text-main); }
-        .stat-badge b { color: var(--primary); }
-        .points-badge { background: #fef08a; border-color: #eab308; color: #854d0e; }
-        .points-badge b { color: #854d0e; }
+    /* Balance Strip */
+    .balance-bar {
+      background: linear-gradient(135deg, #0f766e 0%, #115e59 100%);
+      color: #fff;
+      border-radius: 16px;
+      padding: 14px 18px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .balance-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
+    }
+    .stat-box {
+      background: rgba(255, 255, 255, 0.14);
+      padding: 8px 14px;
+      border-radius: 12px;
+      min-width: 105px;
+    }
+    .stat-label { font-size: 11px; opacity: 0.88; }
+    .stat-val { font-size: 17px; font-weight: 800; margin-top: 2px; }
+    .balance-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
-        .lang-control-bar {
-            display: flex; justify-content: space-between; align-items: center;
-            background: rgba(15, 118, 110, 0.06); padding: 5px 8px; border-radius: 8px;
-            margin-bottom: 8px; font-size: 10px; border: 1px solid rgba(15, 118, 110, 0.2);
-        }
-        .lang-control-bar select {
-            padding: 3px 6px; border-radius: 6px; border: 1px solid var(--primary);
-            background: var(--card-bg); color: var(--text-main); font-size: 10px; font-weight: 600; outline: none;
-        }
+    /* Navigation Tabs */
+    .nav-tabs {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 6px;
+      background: var(--card);
+      padding: 6px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+    }
+    .tab-btn {
+      padding: 10px 6px;
+      border: none;
+      background: transparent;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 12.5px;
+      color: var(--muted);
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      background: var(--primary);
+      color: #fff;
+    }
 
-        .chat-container { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; scroll-behavior: smooth; margin-bottom: 8px; }
-        .message-row { display: flex; width: 100%; }
-        .message-row.user { justify-content: flex-end; }
-        .message-row.ai { justify-content: flex-start; }
-        .message-bubble { max-width: 85%; padding: 8px 12px; border-radius: 10px; font-size: 12px; line-height: 1.45; word-wrap: break-word; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
-        .message-row.user .message-bubble { background: var(--user-bubble); color: var(--user-text); border-bottom-right-radius: 2px; }
-        .message-row.ai .message-bubble { background: var(--ai-bubble); color: var(--ai-text); border-bottom-left-radius: 2px; }
+    /* Main Panel */
+    .panel {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 20px;
+      border: 1px solid var(--border);
+      flex: 1;
+    }
 
-        .bubble-actions { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
-        .voice-listen-btn {
-            display: inline-flex; align-items: center; gap: 4px;
-            background: rgba(15, 118, 110, 0.1); color: var(--primary); border: 1px solid var(--primary);
-            padding: 3px 8px; border-radius: 12px; font-size: 10px; font-weight: 600; cursor: pointer;
-        }
+    /* Chat Area */
+    .chat-controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .chat-box {
+      height: 330px;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      background: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .msg {
+      max-width: 82%;
+      padding: 11px 14px;
+      border-radius: 14px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .msg.ai {
+      background: #fff;
+      border: 1px solid var(--border);
+      align-self: flex-start;
+    }
+    .msg.user {
+      background: var(--primary);
+      color: #fff;
+      align-self: flex-end;
+    }
+    .format-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .format-row label {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      background: #f1f5f9;
+      padding: 6px 12px;
+      border-radius: 8px;
+    }
+    .chat-input-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .chat-input-row input[type="text"] {
+      flex: 1;
+      padding: 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: inherit;
+    }
 
-        .chat-footer { border-top: 1px solid var(--border); background: var(--card-bg); display: flex; flex-direction: column; gap: 6px; padding-top: 6px; }
-        .tools-row { display: flex; flex-direction: column; gap: 4px; font-size: 10px; background: rgba(0,0,0,0.02); padding: 5px; border-radius: 6px; }
-        .checkbox-group { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-        
-        .input-row { display: flex; gap: 5px; align-items: center; }
-        .attach-btn, .send-btn { background: none; border: 1px solid var(--border); width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 13px; color: var(--text-main); flex-shrink: 0; }
-        .send-btn { background: var(--primary); color: white; border: none; }
-        .mic-recording { background: #ef4444 !important; color: white !important; border-color: #ef4444 !important; animation: pulse 1s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
+    /* Project Idea Card */
+    .project-result-card {
+      background: #f0fdfa;
+      border: 2px solid var(--primary);
+      border-radius: 14px;
+      padding: 18px;
+      margin-top: 16px;
+    }
+    .fingerprint-badge {
+      display: inline-block;
+      background: #0f172a;
+      color: #38bdf8;
+      font-family: monospace;
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-weight: 700;
+    }
 
-        .chat-input { flex: 1; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text-main); font-size: 12px; outline: none; min-width: 0; }
-        
-        #cameraInput, #fileInput { display: none; }
+    /* Cards Grid */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+    .plan-card {
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 14px;
+    }
+    .plan-card.featured {
+      border-color: var(--primary);
+      background: #f0fdfa;
+    }
+    .price-tag {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--primary-dark);
+    }
+    .feature-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 14px;
+    }
 
-        .card-box { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
-        .card-box h3 { font-size: 13px; color: var(--primary); margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
-        
-        .schedule-list { display: flex; flex-direction: column; gap: 5px; margin-bottom: 8px; max-height: 140px; overflow-y: auto; }
-        .schedule-row-item { font-size: 11px; padding: 5px 7px; background: rgba(0,0,0,0.02); border-radius: 6px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border); }
-        .add-schedule-form { display: flex; gap: 5px; margin-top: 6px; }
-        .add-schedule-form input { flex: 1; padding: 5px; font-size: 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--card-bg); color: var(--text-main); }
-        .add-btn { background: var(--primary); color: white; border: none; padding: 5px 8px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer; }
-        .add-btn:disabled { background: #94a3b8; cursor: not-allowed; }
+    /* Converter Preview Box */
+    .convert-preview {
+      background: #f0fdfa;
+      border: 1.5px dashed var(--primary);
+      border-radius: 12px;
+      padding: 14px;
+      text-align: center;
+      margin: 14px 0;
+    }
+    .convert-rate-info {
+      font-size: 12px;
+      color: var(--muted);
+      background: #f8fafc;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
 
-        .countdown-timer { font-size: 12px; font-weight: bold; color: #e11d48; margin-top: 2px; }
+    /* List Items */
+    .item-card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
 
-        .pricing-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px; margin-bottom: 8px; text-align: center; }
-        .pricing-card.featured { border-color: var(--primary); background: rgba(15, 118, 110, 0.03); }
+    footer {
+      text-align: center;
+      padding: 12px;
+      font-size: 11px;
+      color: var(--muted);
+    }
 
-        .league-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 10px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 6px; font-size: 11px; }
-        .league-row.leader { background: rgba(254, 240, 138, 0.25); border-color: #eab308; }
-        
-        .wa-box { background: rgba(16, 185, 129, 0.05); border: 1px solid #10b981; border-radius: 10px; padding: 10px; margin-bottom: 10px; }
-        .wa-input { width: 100%; padding: 6px; font-size: 11px; border: 1px solid var(--border); border-radius: 6px; background: var(--card-bg); color: var(--text-main); margin-top: 5px; }
-
-        .footer-powered { text-align: center; font-size: 9px; color: var(--text-muted); padding: 6px; border-top: 1px solid var(--border); background: var(--card-bg); }
-    </style>
+    @media (max-width: 720px) {
+      .nav-tabs { grid-template-columns: repeat(3, 1fr); }
+      .chat-controls { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
-<body data-theme="light">
+<body>
 
-    <!-- AUTHENTICATION OVERLAY WITH TRIAL TOKEN ACTIVATION -->
-    <div id="authOverlay">
-        <div class="auth-card">
-            <h2 id="authTitle">Study Flow</h2>
-            <p style="font-size: 9px; color: var(--text-muted); text-align:center;">Study Flow • Owned by Distingstyle Ltd</p>
-            <p style="font-size: 10px; color: var(--text-muted); text-align:center;" id="authSub">Sign in to your account</p>
-            
-            <input type="email" id="authEmail" class="auth-input" placeholder="Email address (e.g. user@gmail.com)">
-            
-            <div class="password-container">
-                <input type="password" id="authPass" class="auth-input" placeholder="Password">
-                <button type="button" class="eye-btn" onclick="togglePassword('authPass', this)">👁️</button>
-            </div>
-
-            <div class="password-container" id="confirmPassGroup" style="display:none;">
-                <input type="password" id="authConfirmPass" class="auth-input" placeholder="Confirm Password">
-                <button type="button" class="eye-btn" onclick="togglePassword('authConfirmPass', this)">👁️</button>
-            </div>
-
-            <div class="auth-input" id="trialTokenGroup" style="display:none; background: rgba(16,185,129,0.05); border-color:#10b981;">
-                <input type="text" id="trialTokenInput" class="auth-input" placeholder="Enter Trial Token Code (Optional)" style="border:none; background:transparent;">
-            </div>
-
-            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 10px; margin-top: -2px;">
-                <label style="display: flex; align-items: center; gap: 4px; cursor: pointer; color: var(--text-muted);">
-                    <input type="checkbox" id="rememberMeCheck"> Remember Me
-                </label>
-                <a href="#" onclick="handleForgotPassword(event)" style="color: var(--primary); text-decoration: none;">Forgot Password?</a>
-            </div>
-
-            <button class="auth-btn" type="button" onclick="handleAuthSubmit()" id="authSubmitBtn" style="margin-top: 4px;">Sign In</button>
-            <button type="button" style="background:none; border:none; color:var(--primary); font-size:10px; cursor:pointer; text-decoration:underline; text-align:center;" onclick="toggleAuthMode()" id="toggleAuthBtn">Don't have an account? Sign Up</button>
+  <!-- Login / Sign Up Modal -->
+  <div id="authModal" class="overlay">
+    <div class="modal-card">
+      <div class="brand-logo">
+        <div class="brand-badge">SF</div>
+        <div>
+          <h2 style="font-size:20px; font-weight:800;">Study Flow</h2>
+          <div class="micro-brand">Owned by DistingStyle Ltd</div>
         </div>
+      </div>
+      <p style="text-align:center; font-size:13px; color:var(--muted); margin-bottom:18px;">
+        Trilingual AI Study Tutor (Arabic • French • English)
+      </p>
+
+      <div class="input-group">
+        <label>Student Name</label>
+        <input type="text" id="loginName" placeholder="e.g. Rami Haddad" value="Student Demo" />
+      </div>
+      <div class="input-group">
+        <label>Email Address</label>
+        <input type="email" id="loginEmail" placeholder="student@example.com" value="student@studyflow.app" />
+      </div>
+      <div class="input-group">
+        <label>Trial / Access Code (Optional)</label>
+        <input type="text" id="loginTrialCode" placeholder="e.g. TRIAL-STUDENT-2026" />
+      </div>
+
+      <button class="btn btn-primary" onclick="handleLogin()">Start Studying</button>
     </div>
+  </div>
 
-    <!-- TOP-UP MODAL -->
-    <div id="topUpModal">
-        <div class="modal-card">
-            <h3 style="font-size: 14px; color: var(--primary);">⚡ Mid-Month Credit Top-Up</h3>
-            <p style="font-size: 10px; color: var(--text-muted);">Buy extra credits directly via Stripe or redeem a prepaid card:</p>
-            
-            <select id="topUpPackageSelect" class="auth-input">
-                <option value="2.99">Small Pack ($2.99) - +30 Lessons, +15 Voice, +5 Video</option>
-                <option value="4.99" selected>Medium Pack ($4.99) - +60 Lessons, +30 Voice, +12 Video</option>
-                <option value="9.99">Large Pack ($9.99) - +140 Lessons, +70 Voice, +30 Video</option>
-            </select>
+  <!-- Balance Converter Modal -->
+  <div id="converterModal" class="overlay hidden">
+    <div class="modal-card">
+      <h3 style="font-size:18px; font-weight:800; margin-bottom:6px;">🔄 Credit Balance Converter</h3>
+      <p style="font-size:13px; color:var(--muted); margin-bottom:12px;">
+        Convert your unused credits between Lessons, Voice Minutes, and Video Explanations anytime.
+      </p>
 
-            <button class="auth-btn" type="button" onclick="buyTopUpOnline()" style="background: var(--primary);">💳 Buy Selected Pack Online (Stripe)</button>
+      <div class="convert-rate-info">
+        <strong>Conversion Rates:</strong><br/>
+        • 1 Video = 6 Lesson Topics = 3 Voice Minutes<br/>
+        • 1 Voice Minute = 2 Lesson Topics
+      </div>
 
-            <div style="border-top: 1px solid var(--border); margin: 4px 0; padding-top: 8px;">
-                <p style="font-size: 10px; color: var(--text-muted); margin-bottom: 4px;">Or enter a Prepaid Scratch Card Code:</p>
-                <input type="text" id="prepaidCodeInput" class="auth-input" placeholder="e.g. SF-9482-XXXX">
-                <button class="auth-btn" type="button" onclick="submitPrepaidTopUp()" style="background: #10b981; margin-top: 6px;">🎟️ Redeem Prepaid Code</button>
-            </div>
-            
-            <button class="auth-btn" type="button" onclick="closeTopUpModal()" style="background: #64748b;">Cancel</button>
-        </div>
+      <div class="input-group">
+        <label>Convert From (Your Current Balance):</label>
+        <select id="convertFrom" onchange="updateConverterPreview()">
+          <option value="lessons">📚 Lesson Topics</option>
+          <option value="voice">🎙️ Voice Minutes</option>
+          <option value="videos">🎬 Video Explanations</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <label>Convert To:</label>
+        <select id="convertTo" onchange="updateConverterPreview()">
+          <option value="voice">🎙️ Voice Minutes</option>
+          <option value="videos">🎬 Video Explanations</option>
+          <option value="lessons">📚 Lesson Topics</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <label>Amount to Spend:</label>
+        <input type="number" id="convertAmount" min="1" value="6" oninput="updateConverterPreview()" />
+      </div>
+
+      <div class="convert-preview" id="convertPreviewBox">
+        You will receive: <strong>+3 Voice Minutes</strong>
+      </div>
+
+      <div style="display:flex; gap:10px;">
+        <button class="btn btn-primary" onclick="executeConversion()">Confirm Conversion</button>
+        <button class="btn btn-outline" onclick="closeModal('converterModal')">Cancel</button>
+      </div>
     </div>
+  </div>
 
-<div class="app-container">
-    <div class="app-header">
-        <div class="logo-area">
-            <div class="logo-icon">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" style="width:20px;height:20px;">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-                </svg>
-            </div>
-            <div class="logo-text">
-                <h1>Study Flow</h1>
-                <span>Owned by Distingstyle Ltd</span>
-            </div>
-        </div>
-        <div style="display: flex; gap: 4px; align-items: center;">
-            <select class="theme-select" id="themeSelect" onchange="changeTheme()">
-                <option value="light">☀️</option>
-                <option value="dark">🌙</option>
-                <option value="focus">🌱</option>
-            </select>
-        </div>
+  <!-- Top-Up Modal -->
+  <div id="topupModal" class="overlay hidden">
+    <div class="modal-card">
+      <h3 style="font-size:18px; font-weight:800; margin-bottom:6px;">⚡ Mid-Month Credit Top-Up</h3>
+      <p style="font-size:13px; color:var(--muted); margin-bottom:14px;">
+        Buy extra credits directly via Stripe or redeem a prepaid scratch card:
+      </p>
+
+      <div class="input-group">
+        <label>Select Top-Up Pack:</label>
+        <select id="topupPackSelect">
+          <option value="small">Small Pack ($2.99) - +30 Lessons, +15 Voice, +5 Videos</option>
+          <option value="medium" selected>Medium Pack ($4.99) - +60 Lessons, +30 Voice, +12 Videos</option>
+          <option value="large">Large Pack ($9.99) - +140 Lessons, +70 Voice, +30 Videos</option>
+        </select>
+      </div>
+
+      <button class="btn btn-primary" style="margin-bottom:16px;" onclick="buyTopUpOnline()">
+        💳 Buy Selected Pack Online (Stripe)
+      </button>
+
+      <div class="input-group">
+        <label>Or enter a Prepaid Scratch Card Code:</label>
+        <input type="text" id="prepaidCodeInput" placeholder="e.g. SF-9482-XXXX" />
+      </div>
+
+      <button class="btn btn-success" style="margin-bottom:10px;" onclick="redeemPrepaidCode()">
+        🎟️ Redeem Prepaid Code
+      </button>
+
+      <button class="btn btn-outline" onclick="closeModal('topupModal')">Cancel</button>
     </div>
+  </div>
+
+  <!-- Main App Shell -->
+  <div class="app-shell">
+    <!-- Top Bar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <div class="brand-badge">SF</div>
+        <div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <strong style="font-size:17px;">Study Flow</strong>
+            <span id="userPlanBadge" class="plan-pill">Free Starter</span>
+          </div>
+          <div style="font-size:11px; color:var(--muted);">Owned by DistingStyle Ltd • Welcome, <span id="displayUserName">Student</span></div>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <select id="langSelect" onchange="changeLanguage(this.value)" style="padding:7px 10px; border-radius:8px; border:1px solid var(--border); font-weight:600; font-size:12px;">
+          <option value="en">🇬🇧 English</option>
+          <option value="ar">🇱🇧 العربية</option>
+          <option value="fr">🇫🇷 Français</option>
+        </select>
+        <button class="btn btn-outline btn-sm" onclick="logout()">Logout</button>
+      </div>
+    </header>
+
+    <!-- Credit Balance Bar -->
+    <section class="balance-bar">
+      <div class="balance-stats">
+        <div class="stat-box">
+          <div class="stat-label" data-i18n="lessons">📚 Lesson Topics</div>
+          <div class="stat-val" id="balLessons">15</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label" data-i18n="voice">🎙️ Voice Mins</div>
+          <div class="stat-val" id="balVoice">10</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label" data-i18n="videos">🎬 Videos</div>
+          <div class="stat-val" id="balVideos">3</div>
+        </div>
+      </div>
+
+      <div class="balance-actions">
+        <button class="btn btn-outline btn-sm" style="background:#fff; color:var(--primary-dark); border:none;" onclick="openConverterModal()">
+          🔄 Convert Balance
+        </button>
+        <button class="btn btn-accent btn-sm" onclick="openModal('topupModal')">
+          ⚡ Top Up
+        </button>
+      </div>
+    </section>
 
     <!-- Navigation Tabs -->
-    <div class="nav-tabs">
-        <button class="tab-btn active" onclick="switchTab('chatTab', this)">💬 Chat</button>
-        <button class="tab-btn" onclick="switchTab('vaultTab', this)">🧠 Vault <span id="vaultBadge" style="background:#e11d48;color:white;border-radius:10px;padding:1px 4px;font-size:8px;">0</span></button>
-        <button class="tab-btn" onclick="switchTab('classBattleTab', this)">🏆 League</button>
-        <button class="tab-btn" onclick="switchTab('scheduleTab', this)">📅 Schedules</button>
-        <button class="tab-btn" onclick="switchTab('pricingTab', this)">💎 Plans</button>
-    </div>
+    <nav class="nav-tabs">
+      <button class="tab-btn active" onclick="switchTab('chat', this)" data-i18n="tabChat">💬 AI Tutor</button>
+      <button class="tab-btn" onclick="switchTab('projects', this)" data-i18n="tabProjects">💡 Research Lab</button>
+      <button class="tab-btn" onclick="switchTab('vault', this)" data-i18n="tabVault">🧠 Error Vault</button>
+      <button class="tab-btn" onclick="switchTab('quiz', this)" data-i18n="tabQuiz">🏆 Quiz Arena</button>
+      <button class="tab-btn" onclick="switchTab('schedule', this)" data-i18n="tabSchedule">📅 Schedule</button>
+      <button class="tab-btn" onclick="switchTab('plans', this)" data-i18n="tabPlans">💎 Plans</button>
+    </nav>
 
-    <!-- Stats Bar -->
-    <div class="stats-bar">
-        <div class="stat-badge">📚 <b id="statText">120</b></div>
-        <div class="stat-badge">🎙️ <b id="statVoice">60</b></div>
-        <div class="stat-badge">🎬 <b id="statVideo">20</b></div>
-        <div class="stat-badge points-badge">🪙 <b id="statPoints">0</b>/100</div>
-        <button onclick="openTopUpModal()" class="add-btn" style="font-size: 9px; padding: 2px 6px;">+ Top-Up</button>
-    </div>
+    <!-- TAB 1: AI TUTOR -->
+    <main id="tab-chat" class="panel">
+      <div class="chat-controls">
+        <div class="input-group" style="margin:0;">
+          <label>Subject</label>
+          <select id="subjectSelect">
+            <option value="Mathematics">Mathematics</option>
+            <option value="Physics & Chemistry">Physics & Chemistry</option>
+            <option value="Biology & Life Sciences">Biology & Life Sciences</option>
+            <option value="Languages & Literature">Languages & Literature</option>
+            <option value="History & Geography">History & Geography</option>
+          </select>
+        </div>
+        <div class="input-group" style="margin:0;">
+          <label>Upload Lesson Photo / Gallery</label>
+          <input type="file" id="lessonFileInput" accept="image/*,.pdf" onchange="handleFileUpload(event)" />
+        </div>
+      </div>
 
-    <!-- TAB 1: CHAT VIEW -->
-    <div class="view-content active" id="chatTab">
-        <div class="lang-control-bar">
-            <span style="font-weight: 600; color: var(--primary);">🌐 Explain & Answer In:</span>
-            <select id="explainLangSelect" onchange="notifyLanguageChange()">
-                <option value="auto">🔄 Auto (Same as Lesson)</option>
-                <option value="ar">🇱🇧 عربي (مع مصطلحات الدرس)</option>
-                <option value="en">🇬🇧 English</option>
-                <option value="fr">🇫🇷 Français</option>
-            </select>
+      <div id="chatBox" class="chat-box">
+        <div class="msg ai">
+          👋 Welcome to <strong>Study Flow</strong>! Upload a photo of your textbook page or type your question below. Choose whether you want a <strong>Text</strong>, <strong>Voice</strong>, or <strong>Video</strong> explanation.
+        </div>
+      </div>
+
+      <div class="format-row">
+        <span>Explanation Format:</span>
+        <label><input type="radio" name="expFormat" value="text" checked /> 📄 Text (1 Lesson)</label>
+        <label><input type="radio" name="expFormat" value="voice" /> 🎙️ Voice (2 Mins)</label>
+        <label><input type="radio" name="expFormat" value="video" /> 🎬 Video (1 Video)</label>
+      </div>
+
+      <div class="chat-input-row">
+        <input type="text" id="chatInput" placeholder="Ask any lesson question in Arabic, French, or English..." onkeypress="if(event.key==='Enter') sendMessage()" />
+        <button class="btn btn-primary" style="width:auto; padding:12px 20px;" onclick="sendMessage()">Send</button>
+      </div>
+    </main>
+
+    <!-- TAB 2: UNIQUE PROJECT & RESEARCH LAB -->
+    <section id="tab-projects" class="panel hidden">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
+        <div>
+          <h3 style="font-size:18px; font-weight:800;">💡 Unique Project & Research Idea Generator</h3>
+          <p style="font-size:13px; color:var(--muted); margin-top:3px;">
+            Anti-Duplicate Engine: Every student gets a <strong>100% unique angle, research question, and structure</strong> — never repeated even for identical class topics!
+          </p>
+        </div>
+        <span class="plan-pill">1 Lesson Credit / Idea</span>
+      </div>
+
+      <div class="grid-2" style="margin-bottom:12px;">
+        <div class="input-group" style="margin:0;">
+          <label>General Topic or Subject Area</label>
+          <input type="text" id="projTopicInput" placeholder="e.g. Renewable Energy, AI in Healthcare, Climate Change..." />
+        </div>
+        <div class="input-group" style="margin:0;">
+          <label>Project Type & Academic Level</label>
+          <select id="projTypeSelect">
+            <option value="School Science / Research Paper">School Research Paper</option>
+            <option value="Practical Experiment / Prototype">Practical Experiment / Prototype</option>
+            <option value="University Case Study & Analysis">University Case Study & Analysis</option>
+            <option value="Presentation & Debate Pitch">Presentation & Debate Pitch</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label>Your Personal Interest or Local Focus (Optional — makes it even more tailored)</label>
+        <input type="text" id="projFocusInput" placeholder="e.g. Focus on Lebanon / Middle East, low-budget materials, data analysis..." />
+      </div>
+
+      <button class="btn btn-primary" onclick="generateUniqueProject()">
+        ✨ Generate 100% Original Project Idea (Anti-Repeat)
+      </button>
+
+      <!-- Active Generated Result -->
+      <div id="projectResultContainer"></div>
+
+      <!-- History of Generated Ideas (Anti-Duplicate Log) -->
+      <div style="margin-top:22px;">
+        <h4 style="font-size:14px; font-weight:800; margin-bottom:10px; color:var(--muted);">
+          🔒 Your Locked Original Ideas (Anti-Duplicate Registry)
+        </h4>
+        <div id="projectHistoryList"></div>
+      </div>
+    </section>
+
+    <!-- TAB 3: SMART ERROR VAULT -->
+    <section id="tab-vault" class="panel hidden">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <div>
+          <h3 style="font-size:18px; font-weight:800;">🧠 Smart Error Vault</h3>
+          <p style="font-size:13px; color:var(--muted);">Automatically tracks concepts you struggled with for targeted revision.</p>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="addSampleError()">+ Log Mistake</button>
+      </div>
+      <div id="vaultList"></div>
+    </section>
+
+    <!-- TAB 4: DAILY QUIZ ARENA -->
+    <section id="tab-quiz" class="panel hidden">
+      <h3 style="font-size:18px; font-weight:800; margin-bottom:6px;">🏆 Inter-Student Quiz Arena</h3>
+      <p style="font-size:13px; color:var(--muted); margin-bottom:16px;">Compete in daily subject challenges and climb the leaderboard.</p>
+
+      <div class="item-card" style="background:#f8fafc;">
+        <div>
+          <span class="plan-pill">Daily Challenge • Physics</span>
+          <h4 style="margin-top:8px; font-size:15px;">If a car accelerates from 0 to 20 m/s in 4 seconds, what is its acceleration?</h4>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button class="btn btn-outline btn-sm" onclick="answerQuiz(false)">4 m/s²</button>
+          <button class="btn btn-outline btn-sm" onclick="answerQuiz(true)">5 m/s²</button>
+          <button class="btn btn-outline btn-sm" onclick="answerQuiz(false)">80 m/s²</button>
+        </div>
+      </div>
+      <div id="quizFeedback" style="font-size:14px; font-weight:700; margin-top:10px;"></div>
+    </section>
+
+    <!-- TAB 5: WEEKLY SCHEDULE & PARENT REPORT -->
+    <section id="tab-schedule" class="panel hidden">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
+        <div>
+          <h3 style="font-size:18px; font-weight:800;">📅 Weekly Study Schedule & Exam Alerts</h3>
+          <p style="font-size:13px; color:var(--muted);">Stay on track and send automated progress summaries to parents.</p>
+        </div>
+        <button class="btn btn-success btn-sm" onclick="sendParentWhatsApp()">📲 Send Parent WhatsApp Report</button>
+      </div>
+
+      <div class="item-card">
+        <div>
+          <strong>Monday & Wednesday — 5:00 PM</strong>
+          <div style="font-size:13px; color:var(--muted);">Mathematics: Quadratic Equations & Functions</div>
+        </div>
+        <span class="plan-pill">Exam in 4 Days</span>
+      </div>
+      <div class="item-card">
+        <div>
+          <strong>Tuesday & Thursday — 6:00 PM</strong>
+          <div style="font-size:13px; color:var(--muted);">Physics: Newton's Laws of Motion</div>
+        </div>
+        <span class="plan-pill" style="background:#fef3c7; color:#92400e;">Revision Alert</span>
+      </div>
+    </section>
+
+    <!-- TAB 6: SUBSCRIPTION PLANS & TRIAL -->
+    <section id="tab-plans" class="panel hidden">
+      <h3 style="font-size:18px; font-weight:800; margin-bottom:4px;">💎 Choose Your Monthly Plan</h3>
+      <p style="font-size:13px; color:var(--muted); margin-bottom:16px;">Upgrade anytime or activate a student trial token below.</p>
+
+      <div class="grid-2" style="margin-bottom:20px;">
+        <!-- Regular Plan -->
+        <div class="plan-card">
+          <div>
+            <span class="plan-pill">Regular</span>
+            <div class="price-tag" style="margin:10px 0;">$9.99 <span style="font-size:13px; font-weight:500; color:var(--muted);">/ month</span></div>
+            <ul class="feature-list">
+              <li>✅ <strong>120</strong> Lesson Topics / month</li>
+              <li>✅ <strong>60</strong> Voice Explanation Mins</li>
+              <li>✅ <strong>20</strong> Video Explanations</li>
+              <li>✅ Anti-Duplicate Research Lab</li>
+              <li>✅ Credit Balance Converter Access</li>
+            </ul>
+          </div>
+          <button class="btn btn-primary" onclick="processPayment('Regular Plan', 9.99, 'https://buy.stripe.com/dRm00j6Vp3Neafm3Pz87K03')">
+            Subscribe Regular ($9.99)
+          </button>
         </div>
 
-        <div class="chat-container" id="chatBox"></div>
-
-        <div class="chat-footer">
-            <div class="tools-row">
-                <span style="font-weight: 600;">Explanation Format:</span>
-                <div class="checkbox-group">
-                    <label><input type="checkbox" id="fmtText" checked> 📝 Text</label>
-                    <label><input type="checkbox" id="fmtVoice"> 🎙️ Voice</label>
-                    <label><input type="checkbox" id="fmtVideo"> 🎬 Video</label>
-                    <label style="margin-left: auto; color: var(--primary);"><input type="checkbox" id="useBankCheck"> Bank Rollover</label>
-                </div>
-            </div>
-            
-            <div class="input-row">
-                <input type="file" id="cameraInput" accept="image/*" capture="environment" onchange="handleFileSelect(event)">
-                <button class="attach-btn" type="button" onclick="document.getElementById('cameraInput').click()" title="Snap Lesson Photo">📸</button>
-
-                <input type="file" id="fileInput" accept="image/*,application/pdf,.doc,.docx" onchange="handleFileSelect(event)">
-                <button class="attach-btn" type="button" onclick="document.getElementById('fileInput').click()" title="Attach File">📎</button>
-
-                <button class="attach-btn" type="button" id="micBtn" onclick="toggleVoiceInput()" title="Speak Question">🎤</button>
-
-                <input type="text" class="chat-input" id="userInput" placeholder="Ask in any language..." onkeypress="handleKey(event)">
-                <button class="send-btn" type="button" onclick="sendMessage()">🚀</button>
-            </div>
+        <!-- Pro Plan -->
+        <div class="plan-card featured">
+          <div>
+            <span class="plan-pill" style="background:var(--primary); color:#fff;">Pro • Most Popular</span>
+            <div class="price-tag" style="margin:10px 0;">$12.99 <span style="font-size:13px; font-weight:500; color:var(--muted);">/ month</span></div>
+            <ul class="feature-list">
+              <li>✅ <strong>250</strong> Lesson Topics / month</li>
+              <li>✅ <strong>120</strong> Voice Explanation Mins</li>
+              <li>✅ <strong>50</strong> Video Explanations</li>
+              <li>✅ Priority AI Tutor + Unlimited Research Lab</li>
+              <li>✅ Parent WhatsApp Weekly Reports</li>
+            </ul>
+          </div>
+          <button class="btn btn-primary" onclick="processPayment('Pro Plan', 12.99, 'https://buy.stripe.com/00w8wP1B50B2cnu2Lv87K04')">
+            Subscribe Pro ($12.99)
+          </button>
         </div>
-    </div>
+      </div>
 
-    <!-- TAB 2: SMART ERROR VAULT -->
-    <div class="view-content" id="vaultTab">
-        <div class="card-box">
-            <h3>🧠 Smart Error Vault</h3>
-            <p style="font-size: 10px; color: var(--text-muted); margin-bottom: 8px;">
-                Questions you miss in quizzes are automatically saved here for revision!
-            </p>
-            <button class="add-btn" onclick="practiceVaultErrors()" id="practiceVaultBtn" style="width: 100%; margin-bottom: 10px; background: #e11d48;">🎯 Practice Saved Mistakes</button>
-            <div id="vaultListContainer">
-                <p style="font-size: 11px; color: var(--text-muted); text-align: center; padding: 15px 0;">No mistakes recorded yet!</p>
-            </div>
+      <!-- Trial Token Box -->
+      <div style="background:#f8fafc; border:1px solid var(--border); border-radius:14px; padding:16px;">
+        <h4 style="font-size:15px; margin-bottom:6px;">🎟️ Activate Student Trial Token</h4>
+        <p style="font-size:12px; color:var(--muted); margin-bottom:10px;">Have an invite code (e.g., <code>TRIAL-STUDENT-2026</code>)? Enter it below for instant Pro access.</p>
+        <div style="display:flex; gap:8px;">
+          <input type="text" id="trialTokenField" placeholder="TRIAL-STUDENT-2026" style="flex:1; padding:10px; border:1px solid var(--border); border-radius:8px;" />
+          <button class="btn btn-accent btn-sm" onclick="activateTrialToken()">Activate</button>
         </div>
-    </div>
+      </div>
+    </section>
+  </div>
 
-    <!-- TAB 3: LEAGUE -->
-    <div class="view-content" id="classBattleTab">
-        <div class="card-box" style="background: rgba(254, 240, 138, 0.25); border-color: #eab308;">
-            <h3 style="color: #854d0e;">🪙 Study Rewards & Free Videos</h3>
-            <p style="font-size: 10px; color: var(--text-main); margin-bottom: 6px;">
-                Earn <b>+10 Points</b> per correct answer (Max 5/day). Every <b>100 Points</b> unlocks <b>+1 Free Video</b>!
-            </p>
-            <div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: bold; color: #854d0e;">
-                <span>Your Points: <span id="battlePointsDisplay">0</span> / 100</span>
-                <span>Daily Limit: <span id="dailyQuestionsDisplay">0</span> / 5</span>
-            </div>
-        </div>
+  <footer>
+    Study Flow • Owned by DistingStyle Ltd • All Rights Reserved 2026
+  </footer>
 
-        <div class="card-box" style="text-align: center;">
-            <h3>⚔️ Daily Lesson Quiz Arena</h3>
-            <button class="add-btn" type="button" onclick="loadNextDailyQuestion()" id="startQuizBtn" style="padding: 7px 14px; font-size: 11px; width: 100%;">Start Daily Question (1/5) 🚀</button>
-            <div id="classQuizArea" style="margin-top: 8px; display: none; text-align: left;"></div>
-        </div>
+  <script>
+    // Live Stripe Payment Links
+    const STRIPE_LINKS = {
+      regularPlan: 'https://buy.stripe.com/dRm00j6Vp3Neafm3Pz87K03',
+      proPlan: 'https://buy.stripe.com/00w8wP1B50B2cnu2Lv87K04',
+      topupSmall: 'https://buy.stripe.com/5kQ8wPbbFcjKdry85P87K07',
+      topupMedium: 'https://buy.stripe.com/5kQfZh93xfvW4V22Lv87K06',
+      topupLarge: 'https://buy.stripe.com/8x2bJ1a7B5Vm0EMeud87K05'
+    };
 
-        <div class="card-box">
-            <h3>🏆 Class Battle Weekly League</h3>
-            <div id="leagueStandings">
-                <div class="league-row leader">
-                    <div>🥇 <b>Group Alpha (Your Team)</b></div>
-                    <div><b id="alphaScore">420</b> pts</div>
-                </div>
-                <div class="league-row">
-                    <div>🥈 <b>Group Beta</b></div>
-                    <div><b>410</b> pts</div>
-                </div>
-            </div>
-        </div>
+    // App State
+    let state = JSON.parse(localStorage.getItem('studyflow_state')) || {
+      loggedIn: false,
+      name: 'Student',
+      plan: 'Free Starter',
+      lessons: 15,
+      voice: 10,
+      videos: 3,
+      xp: 120,
+      errors: [
+        { id: 1, subject: 'Mathematics', topic: 'Factoring Quadratic Polynomials', date: '2026-11-15' },
+        { id: 2, subject: 'Physics', topic: 'Projectile Motion Equations', date: '2026-11-16' }
+      ],
+      projects: []
+    };
 
-        <div class="wa-box">
-            <h3 style="font-size: 12px; color: #10b981; margin-bottom: 4px;">📱 Parent WhatsApp Report</h3>
-            <div style="display: flex; gap: 5px;">
-                <input type="text" id="parentPhoneInput" class="wa-input" placeholder="Parent WhatsApp (+961...)">
-                <button class="add-btn" type="button" onclick="linkParentWhatsApp()" style="background: #10b981; margin-top: 5px;">Link</button>
-            </div>
-            <div id="waStatus" style="font-size: 10px; color: #10b981; margin-top: 4px; display: none;">✅ Parent WhatsApp Linked!</div>
-        </div>
-    </div>
+    if (!state.projects) state.projects = [];
 
-    <!-- TAB 4: SCHEDULES VIEW -->
-    <div class="view-content" id="scheduleTab">
-        <div class="card-box">
-            <h3>⏰ Weekly Study Schedules</h3>
-            <div class="schedule-list" id="scheduleListContainer"></div>
-            <div class="add-schedule-form">
-                <input type="text" id="newDayInput" placeholder="Day (e.g. Saturday)">
-                <input type="text" id="newTaskInput" placeholder="Subject (e.g. Physics)">
-                <button class="add-btn" type="button" onclick="addScheduleItem()">Add</button>
-            </div>
-        </div>
-
-        <div class="card-box">
-            <h3>⏳ Official Exams Countdown</h3>
-            <div class="countdown-timer">⚠️ 45 Days Remaining (Smart Error Vault Active)</div>
-        </div>
-    </div>
-
-    <!-- TAB 5: PLANS & PRICING -->
-    <div class="view-content" id="pricingTab">
-        <div class="card-box">
-            <h3>💎 Subscription Plans & Trial Management</h3>
-            <div class="pricing-card">
-                <h4 style="font-size: 12px; color: var(--primary);">Regular Plan - $9.99 / mo</h4>
-                <p style="font-size: 10px; color: var(--text-muted); margin: 4px 0;">120 Lesson Topics, 60 Voice Mins, 20 Videos.</p>
-                <button class="add-btn" type="button" onclick="processPayment('Regular Plan', 9.99, 'https://buy.stripe.com/test_3cI8wP1zjfm01gf37qgbm00')">Subscribe via Stripe ($9.99)</button>
-            </div>
-
-            <div class="pricing-card featured">
-                <h4 style="font-size: 12px; color: var(--primary);">Pro Plan - $12.99 / mo</h4>
-                <p style="font-size: 10px; color: var(--text-muted); margin: 4px 0;">250 Lesson Topics, 120 Voice Mins, 50 Videos.</p>
-                <button class="add-btn" type="button" onclick="processPayment('Pro Plan', 12.99, 'https://buy.stripe.com/test_5kQdR9em5ehW4sr23mgbm01')">Subscribe via Stripe ($12.99)</button>
-            </div>
-        </div>
-
-        <div class="card-box">
-            <h3>🎟️ Manual Trial Token Activation</h3>
-            <p style="font-size: 10px; color: var(--text-muted); margin-bottom: 6px;">Enter a student trial code to instantly unlock Pro access:</p>
-            <div style="display: flex; gap: 5px;">
-                <input type="text" id="manualTrialInput" class="auth-input" placeholder="e.g. TRIAL-STUDENT-2026">
-                <button class="add-btn" type="button" onclick="redeemManualTrial()" style="background: #10b981;">Activate</button>
-            </div>
-        </div>
-
-        <div class="card-box">
-            <h3>📄 Legal & Fair Use</h3>
-            <p style="font-size: 10px; color: var(--text-muted); line-height: 1.4;">
-                Operated by <b>Distingstyle Ltd</b> (UK). Status: Stripe Account Verified. Max 2 active devices per account.
-            </p>
-        </div>
-    </div>
-
-    <div class="footer-powered">
-        Study Flow • Owned by Distingstyle Ltd © 2026
-    </div>
-</div>
-
-<script src="https://js.stripe.com/v3/"></script>
-<script>
-    let attachedImage = null;
-    let isRegisterMode = false;
-    
-    let textCredits = 120;
-    let voiceCredits = 60;
-    let videoCredits = 20;
-    let userPoints = 0;
-    let alphaTeamScore = 420;
-    let dailyQuestionsAnswered = 0;
-    const MAX_DAILY_QUESTIONS = 5;
-    let errorVault = [];
-    let isRecording = false;
-
-    const dailyQuestionsPool = [
-        { q: "What is the derivative of f(x) = x²?", options: ["2x", "x", "x²"], correct: 0, explanation: "Using power rule, derivative of x² is 2x." },
-        { q: "What is the chemical symbol for Water?", options: ["CO2", "H2O", "O2"], correct: 1, explanation: "Water is H2O." },
-        { q: "According to Newton's 2nd Law, Force equals:", options: ["Mass × Velocity", "Mass × Acceleration", "Energy / Time"], correct: 1, explanation: "F = m × a." }
-    ];
-
-    let scheduleItems = [
-        { day: 'Monday', task: 'Advanced Physics (5 PM)' },
-        { day: 'Wednesday', task: 'Calculus & Derivatives (4:30 PM)' },
-        { day: 'Friday', task: 'Organic Chemistry (6 PM)' }
-    ];
-
-    function updateStatsUI() {
-        document.getElementById('statText').textContent = textCredits;
-        document.getElementById('statVoice').textContent = voiceCredits;
-        document.getElementById('statVideo').textContent = videoCredits;
-        document.getElementById('statPoints').textContent = userPoints;
-        document.getElementById('battlePointsDisplay').textContent = userPoints;
-        document.getElementById('dailyQuestionsDisplay').textContent = dailyQuestionsAnswered;
-        document.getElementById('alphaScore').textContent = alphaTeamScore;
-        document.getElementById('vaultBadge').textContent = errorVault.length;
+    function saveState() {
+      localStorage.setItem('studyflow_state', JSON.stringify(state));
+      renderUI();
     }
 
-    function switchTab(tabId, btn) {
-        document.querySelectorAll('.view-content').forEach(el => el.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-        document.getElementById(tabId).classList.add('active');
-        btn.classList.add('active');
+    function renderUI() {
+      if (state.loggedIn) {
+        document.getElementById('authModal').classList.add('hidden');
+      } else {
+        document.getElementById('authModal').classList.remove('hidden');
+      }
+      document.getElementById('displayUserName').textContent = state.name;
+      document.getElementById('userPlanBadge').textContent = state.plan;
+      document.getElementById('balLessons').textContent = state.lessons;
+      document.getElementById('balVoice').textContent = state.voice;
+      document.getElementById('balVideos').textContent = state.videos;
+      renderVault();
+      renderProjectHistory();
     }
 
-    function changeTheme() {
-        const theme = document.getElementById('themeSelect').value;
-        document.body.setAttribute('data-theme', theme);
+    // Auth & Trial
+    function handleLogin() {
+      const name = document.getElementById('loginName').value.trim() || 'Student';
+      const code = document.getElementById('loginTrialCode').value.trim().toUpperCase();
+      state.loggedIn = true;
+      state.name = name;
+      if (code === 'TRIAL-STUDENT-2026') {
+        applyTrialCredits();
+      }
+      saveState();
     }
 
-    function togglePassword(fieldId, btn) {
-        const input = document.getElementById(fieldId);
-        if (input.type === "password") {
-            input.type = "text";
-            btn.textContent = "🙈";
-        } else {
-            input.type = "password";
-            btn.textContent = "👁️";
-        }
+    function logout() {
+      state.loggedIn = false;
+      saveState();
     }
 
-    function toggleAuthMode() {
-        isRegisterMode = !isRegisterMode;
-        const title = document.getElementById('authTitle');
-        const sub = document.getElementById('authSub');
-        const submitBtn = document.getElementById('authSubmitBtn');
-        const toggleBtn = document.getElementById('toggleAuthBtn');
-        const confirmGroup = document.getElementById('confirmPassGroup');
-        const trialGroup = document.getElementById('trialTokenGroup');
-
-        if (isRegisterMode) {
-            title.textContent = "Create Account";
-            sub.textContent = "Sign up for Study Flow";
-            submitBtn.textContent = "Register & Start";
-            toggleBtn.textContent = "Already have an account? Sign In";
-            confirmGroup.style.display = "flex";
-            trialGroup.style.display = "block";
-        } else {
-            title.textContent = "Study Flow";
-            sub.textContent = "Sign in to your account";
-            submitBtn.textContent = "Sign In";
-            toggleBtn.textContent = "Don't have an account? Sign Up";
-            confirmGroup.style.display = "none";
-            trialGroup.style.display = "none";
-        }
+    function activateTrialToken() {
+      const code = document.getElementById('trialTokenField').value.trim().toUpperCase();
+      if (code === 'TRIAL-STUDENT-2026') {
+        applyTrialCredits();
+        saveState();
+        alert('🎉 Trial Activated! You now have full Pro Trial credits.');
+      } else {
+        alert('❌ Invalid trial code. Please check your invitation card.');
+      }
     }
 
-    function handleAuthSubmit() {
-        const email = document.getElementById('authEmail').value.trim();
-        const pass = document.getElementById('authPass').value;
-        const trialToken = document.getElementById('trialTokenInput').value.trim();
-
-        if (!email || !pass) {
-            alert("Please enter both email and password.");
-            return;
-        }
-
-        if (trialToken) {
-            if (trialToken.startsWith("TRIAL-")) {
-                textCredits = 250;
-                voiceCredits = 120;
-                videoCredits = 50;
-                alert("🎉 Trial Token verified! Pro Plan features unlocked successfully.");
-            } else {
-                alert("⚠️ Invalid trial token code, logging in with standard account.");
-            }
-        }
-
-        document.getElementById('authOverlay').style.display = 'none';
-        appendMessageToChat('ai', `👋 Welcome! Connected as <b>${email}</b>. How can I help you study today?`);
-        updateStatsUI();
-        renderSchedule();
+    function applyTrialCredits() {
+      state.plan = 'Pro Trial 2026';
+      state.lessons = 250;
+      state.voice = 120;
+      state.videos = 50;
     }
 
-    function handleForgotPassword(e) {
-        e.preventDefault();
-        alert("Password reset instructions sent.");
+    // Stripe Subscriptions & Top-Ups
+    function processPayment(planName, price, stripeLink) {
+      alert(`Redirecting to Stripe Secure Checkout for ${planName} ($${price})...`);
+      window.location.href = stripeLink;
     }
-
-    function openTopUpModal() { document.getElementById('topUpModal').style.display = 'flex'; }
-    function closeTopUpModal() { document.getElementById('topUpModal').style.display = 'none'; }
 
     function buyTopUpOnline() {
-        const sel = document.getElementById('topUpPackageSelect').value;
-        window.location.href = "https://buy.stripe.com/test_3cI8wP1zjfm01gf37qgbm00";
+      const pack = document.getElementById('topupPackSelect').value;
+      if (pack === 'small') {
+        processPayment('Small Top-Up Pack', 2.99, STRIPE_LINKS.topupSmall);
+      } else if (pack === 'medium') {
+        processPayment('Medium Top-Up Pack', 4.99, STRIPE_LINKS.topupMedium);
+      } else if (pack === 'large') {
+        processPayment('Large Top-Up Pack', 9.99, STRIPE_LINKS.topupLarge);
+      }
     }
 
-    function submitPrepaidTopUp() {
-        const code = document.getElementById('prepaidCodeInput').value.trim();
-        if(!code) { alert("Please enter a prepaid code."); return; }
-        textCredits += 60;
-        voiceCredits += 30;
-        videoCredits += 12;
-        updateStatsUI();
-        alert("🎉 Prepaid code redeemed successfully! Credits added.");
-        closeTopUpModal();
+    function redeemPrepaidCode() {
+      const code = document.getElementById('prepaidCodeInput').value.trim().toUpperCase();
+      if (code.startsWith('SF-') && code.length >= 8) {
+        state.lessons += 60;
+        state.voice += 30;
+        state.videos += 12;
+        saveState();
+        closeModal('topupModal');
+        alert('✅ Prepaid Card Redeemed! +60 Lessons, +30 Voice Mins, +12 Videos added to your balance.');
+      } else {
+        alert('❌ Invalid prepaid scratch card code. Format should look like SF-9482-XXXX.');
+      }
     }
 
-    function processPayment(planName, price, stripeLink) {
-        alert(`Redirecting to Stripe Secure Checkout for ${planName} ($${price})...`);
-        window.location.href = stripeLink;
+    // Credit Balance Converter Logic
+    const UNIT_VALUES = { lessons: 1, voice: 2, videos: 6 };
+    const UNIT_LABELS = { lessons: 'Lesson Topics', voice: 'Voice Minutes', videos: 'Videos' };
+
+    function openConverterModal() {
+      updateConverterPreview();
+      openModal('converterModal');
     }
 
-    function redeemManualTrial() {
-        const code = document.getElementById('manualTrialInput').value.trim();
-        if (code.startsWith("TRIAL-")) {
-            textCredits = 250;
-            voiceCredits = 120;
-            videoCredits = 50;
-            updateStatsUI();
-            alert("🎉 Success! Pro Plan unlocked via Manual Trial Token.");
-        } else {
-            alert("❌ Invalid Trial Token code.");
-        }
+    function updateConverterPreview() {
+      const from = document.getElementById('convertFrom').value;
+      const to = document.getElementById('convertTo').value;
+      const amount = parseInt(document.getElementById('convertAmount').value, 10) || 0;
+      const preview = document.getElementById('convertPreviewBox');
+
+      if (from === to) {
+        preview.innerHTML = `<span style="color:var(--danger); font-weight:700;">Please select two different credit types.</span>`;
+        return;
+      }
+
+      const totalPoints = amount * UNIT_VALUES[from];
+      const received = Math.floor(totalPoints / UNIT_VALUES[to]);
+      const actualSpent = Math.floor((received * UNIT_VALUES[to]) / UNIT_VALUES[from]);
+
+      if (received <= 0) {
+        const minNeeded = Math.ceil(UNIT_VALUES[to] / UNIT_VALUES[from]);
+        preview.innerHTML = `<span style="color:var(--danger);">Minimum required is <strong>${minNeeded} ${UNIT_LABELS[from]}</strong> to get 1 ${UNIT_LABELS[to]}.</span>`;
+      } else {
+        preview.innerHTML = `
+          Spending <strong>${actualSpent} ${UNIT_LABELS[from]}</strong> → You receive: 
+          <strong style="color:var(--primary-dark); font-size:16px;">+${received} ${UNIT_LABELS[to]}</strong>
+        `;
+      }
     }
 
-    function notifyLanguageChange() {
-        const lang = document.getElementById('explainLangSelect').value;
-        console.log("Language changed to:", lang);
+    function executeConversion() {
+      const from = document.getElementById('convertFrom').value;
+      const to = document.getElementById('convertTo').value;
+      const amount = parseInt(document.getElementById('convertAmount').value, 10) || 0;
+
+      if (from === to) return alert('Please choose a different target credit type.');
+
+      const totalPoints = amount * UNIT_VALUES[from];
+      const received = Math.floor(totalPoints / UNIT_VALUES[to]);
+      const actualSpent = Math.floor((received * UNIT_VALUES[to]) / UNIT_VALUES[from]);
+
+      if (received <= 0) return alert('Amount is too small for this conversion rate.');
+      if (state[from] < actualSpent) return alert(`Insufficient ${UNIT_LABELS[from]} balance. You currently have ${state[from]}.`);
+
+      state[from] -= actualSpent;
+      state[to] += received;
+      saveState();
+      closeModal('converterModal');
+      alert(`✅ Converted ${actualSpent} ${UNIT_LABELS[from]} into +${received} ${UNIT_LABELS[to]}!`);
     }
 
-    function appendMessageToChat(sender, htmlContent, hasAudio=false) {
-        const box = document.getElementById('chatBox');
-        const row = document.createElement('div');
-        row.className = `message-row ${sender}`;
-        
-        let audioBtnHtml = '';
-        if(hasAudio) {
-            audioBtnHtml = `<div class="bubble-actions"><button class="voice-listen-btn" onclick="playAudioResponse(this)">🔊 Listen (Voice)</button></div>`;
-        }
+    // ==========================================
+    // UNIQUE ANTI-DUPLICATE PROJECT GENERATOR
+    // ==========================================
+    const UNIQUE_ANGLES = [
+      {
+        lens: "Micro-Economic & Cost-Benefit Feasibility",
+        hook: "Evaluating real-world affordability vs. theoretical efficiency in everyday households",
+        methodology: "Comparative cost-per-unit simulation + 3-scenario sensitivity table"
+      },
+      {
+        lens: "Historical Evolution vs. 2026 Future Projection",
+        hook: "Tracing overlooked failure points from early attempts to predict next-decade breakthroughs",
+        methodology: "Timeline gap analysis + predictive bottleneck modeling"
+      },
+      {
+        lens: "Behavioral Psychology & Human Adoption Barriers",
+        hook: "Why technically superior solutions fail when human habits are ignored",
+        methodology: "Structured peer survey (15–20 respondents) + friction-point matrix"
+      },
+      {
+        lens: "Resource-Scarcity & Low-Cost DIY Adaptation",
+        hook: "Redesigning standard models to operate at 30% of conventional resource consumption",
+        methodology: "Prototype stress-testing using locally available off-the-shelf materials"
+      },
+      {
+        lens: "Ethical Dilemmas & Unintended Side Effects",
+        hook: "Uncovering hidden trade-offs that mainstream summaries completely overlook",
+        methodology: "Stakeholder impact matrix + counter-argument rebuttal framework"
+      },
+      {
+        lens: "Cross-Disciplinary Biomimicry & Systems Thinking",
+        hook: "Solving structural bottlenecks by borrowing principles from natural ecosystems",
+        methodology: "Systems feedback-loop diagram + comparative efficiency benchmark"
+      },
+      {
+        lens: "Urban vs. Rural Implementation Contrast",
+        hook: "How infrastructure density radically changes outcomes for the exact same concept",
+        methodology: "Dual-environment case comparison + scalability scorecard"
+      },
+      {
+        lens: "Failure-Mode & Risk Mitigation Audit",
+        hook: "Reverse-engineering what happens when the system operates under extreme stress",
+        methodology: "Failure Mode & Effects Analysis (FMEA) + resilience checklist"
+      }
+    ];
 
-        row.innerHTML = `<div class="message-bubble">${htmlContent}${audioBtnHtml}</div>`;
-        box.appendChild(row);
-        box.scrollTop = box.scrollHeight;
+    function generateUniqueProject() {
+      const topic = document.getElementById('projTopicInput').value.trim();
+      const projType = document.getElementById('projTypeSelect').value;
+      const focus = document.getElementById('projFocusInput').value.trim();
+
+      if (!topic) {
+        alert('Please enter your general research or project topic first.');
+        return;
+      }
+
+      if (state.lessons < 1) {
+        alert('Not enough Lesson Topics! Please Top Up or Convert Balance.');
+        return;
+      }
+
+      // Pick an angle not yet used for this topic
+      const usedLenses = state.projects
+        .filter(p => p.topic.toLowerCase() === topic.toLowerCase())
+        .map(p => p.lens);
+
+      let availableAngles = UNIQUE_ANGLES.filter(a => !usedLenses.includes(a.lens));
+      if (availableAngles.length === 0) {
+        availableAngles = UNIQUE_ANGLES; // Fallback with fresh random seed
+      }
+
+      const chosen = availableAngles[Math.floor(Math.random() * availableAngles.length)];
+      const uniqueSeed = Math.random().toString(36).substring(2, 7).toUpperCase();
+      const fingerprint = `SF-UNQ-${Date.now().toString().slice(-4)}-${uniqueSeed}`;
+
+      const focusTag = focus ? ` with a targeted focus on "${focus}"` : '';
+      const customTitle = `${topic}: A ${chosen.lens} Perspective${focus ? ` (${focus})` : ''}`;
+      const researchQuestion = `How does ${chosen.lens.toLowerCase()} reshape the practical outcomes of ${topic}${focusTag}, and what measurable trade-offs emerge?`;
+
+      const newIdea = {
+        id: Date.now(),
+        fingerprint,
+        topic,
+        projType,
+        lens: chosen.lens,
+        title: customTitle,
+        hook: chosen.hook,
+        researchQuestion,
+        methodology: chosen.methodology,
+        date: new Date().toISOString().split('T')[0]
+      };
+
+      state.lessons -= 1;
+      state.projects.unshift(newIdea);
+      saveState();
+
+      renderActiveProject(newIdea);
     }
 
-    function playAudioResponse(btn) {
-        btn.textContent = "🔊 Playing Audio...";
-        setTimeout(() => { btn.textContent = "🔊 Listen (Voice)"; }, 2500);
+    function renderActiveProject(idea) {
+      const container = document.getElementById('projectResultContainer');
+      container.innerHTML = `
+        <div class="project-result-card">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+            <span class="plan-pill" style="background:var(--primary); color:#fff;">100% Unique Concept</span>
+            <span class="fingerprint-badge">ID: ${idea.fingerprint}</span>
+          </div>
+
+          <h4 style="font-size:17px; font-weight:800; color:var(--primary-dark); margin-bottom:8px;">
+            ${idea.title}
+          </h4>
+
+          <p style="font-size:13px; margin-bottom:10px;">
+            <strong>🎯 Core Research Question:</strong> ${idea.researchQuestion}
+          </p>
+
+          <p style="font-size:13px; margin-bottom:10px;">
+            <strong>💡 Why Yours Is Different From Classmates:</strong> ${idea.hook}.
+          </p>
+
+          <div style="background:#fff; padding:12px; border-radius:10px; border:1px solid var(--border); font-size:13px; margin-bottom:12px;">
+            <strong>📋 Recommended Structure & Methodology (${idea.projType}):</strong>
+            <ol style="margin-left:18px; margin-top:6px; line-height:1.6;">
+              <li><strong>Introduction & Hook:</strong> Frame the problem around ${idea.lens}.</li>
+              <li><strong>Methodology:</strong> ${idea.methodology}.</li>
+              <li><strong>Evidence & Analysis:</strong> Present 3 concrete data points or observations.</li>
+              <li><strong>Original Conclusion:</strong> Propose an actionable recommendation nobody else in class covered.</li>
+            </ol>
+          </div>
+
+          <button class="btn btn-primary btn-sm" onclick="sendProjectToTutor('${idea.id}')">
+            💬 Draft Outline Step-by-Step in AI Tutor
+          </button>
+        </div>
+      `;
     }
 
-    function handleFileSelect(event) {
-        const file = event.target.files[0];
-        if (file) {
-            attachedImage = file.name;
-            appendMessageToChat('user', `📎 Attached lesson file: <b>${file.name}</b>`);
-            setTimeout(() => {
-                appendMessageToChat('ai', `✅ Received your lesson attachment <b>${file.name}</b>! Analyzing contents... What specific topic or problem would you like explained?`, true);
-            }, 600);
-        }
+    function renderProjectHistory() {
+      const list = document.getElementById('projectHistoryList');
+      if (!state.projects || state.projects.length === 0) {
+        list.innerHTML = `<p style="font-size:12px; color:var(--muted);">No project ideas generated yet. Enter any topic above to get your first unique blueprint.</p>`;
+        return;
+      }
+
+      list.innerHTML = state.projects.map(p => `
+        <div class="item-card">
+          <div style="flex:1;">
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+              <span class="fingerprint-badge">${p.fingerprint}</span>
+              <span style="font-size:11px; color:var(--muted);">${p.projType} • ${p.date}</span>
+            </div>
+            <strong style="display:block; margin-top:6px; font-size:14px;">${p.title}</strong>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="sendProjectToTutor('${p.id}')">Continue in Tutor</button>
+        </div>
+      `).join('');
     }
 
-    function toggleVoiceInput() {
-        const btn = document.getElementById('micBtn');
-        isRecording = !isRecording;
-        if(isRecording) {
-            btn.classList.add('mic-recording');
-            btn.textContent = "⏹️";
-            document.getElementById('userInput').placeholder = "Listening to your voice question...";
-        } else {
-            btn.classList.remove('mic-recording');
-            btn.textContent = "🎤";
-            document.getElementById('userInput').placeholder = "Ask in any language...";
-            document.getElementById('userInput').value = "Explain the last formula from the uploaded lesson.";
-            sendMessage();
-        }
+    function sendProjectToTutor(id) {
+      const idea = state.projects.find(p => String(p.id) === String(id));
+      if (!idea) return;
+      switchTab('chat', document.querySelector('.tab-btn'));
+      document.getElementById('chatInput').value = `Help me build a detailed outline for my unique project "${idea.title}" using ${idea.methodology}.`;
     }
 
-    function handleKey(e) {
-        if(e.key === 'Enter') sendMessage();
+    // Chat & Lesson Explanation
+    function handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      appendMessage('user', `📎 Uploaded lesson file: <b>${file.name}</b>`);
+      setTimeout(() => {
+        appendMessage('ai', `✅ Analyzed <b>${file.name}</b>! Ask a specific question about this page or choose Text, Voice, or Video format below.`);
+      }, 600);
     }
 
     function sendMessage() {
-        const input = document.getElementById('userInput');
-        const text = input.value.trim();
-        if(!text && !attachedImage) return;
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if (!text) return;
 
-        const useVoice = document.getElementById('fmtVoice').checked;
-        const useVideo = document.getElementById('fmtVideo').checked;
+      const format = document.querySelector('input[name="expFormat"]:checked').value;
+      const subject = document.getElementById('subjectSelect').value;
 
-        appendMessageToChat('user', text || `Uploaded lesson image (${attachedImage})`);
-        input.value = '';
-        attachedImage = null;
+      if (format === 'text' && state.lessons < 1) return alert('Not enough Lesson Topics! Use Top Up or Convert Balance.');
+      if (format === 'voice' && state.voice < 2) return alert('Not enough Voice Minutes! Use Top Up or Convert Balance.');
+      if (format === 'video' && state.videos < 1) return alert('Not enough Video credits! Use Top Up or Convert Balance.');
 
-        if(textCredits > 0) textCredits--;
-        if(useVoice && voiceCredits > 0) voiceCredits--;
-        if(useVideo && videoCredits > 0) videoCredits--;
-        updateStatsUI();
+      if (format === 'text') state.lessons -= 1;
+      if (format === 'voice') state.voice -= 2;
+      if (format === 'video') state.videos -= 1;
+      saveState();
 
-        setTimeout(() => {
-            let reply = `Here is a clear step-by-step breakdown of your question: <b>"${text || 'Uploaded Lesson'}"</b>.<br><br>` +
-                        `1. Identify core given parameters.<br>` +
-                        `2. Apply relevant formula principles.<br>` +
-                        `3. Derive final solution accurately.`;
-            if(useVoice) reply += `<br><br>🎙️ <i>[Voice explanation generated and ready]</i>`;
-            if(useVideo) reply += `<br><br>🎬 <i>[Short video breakdown generated]</i>`;
-            
-            appendMessageToChat('ai', reply, useVoice);
-        }, 800);
+      appendMessage('user', text);
+      input.value = '';
+
+      setTimeout(() => {
+        let formatBadge = format === 'text' ? '📄 Text Breakdown' : format === 'voice' ? '🎙️ Voice Note Ready (2:00)' : '🎬 Interactive Video Generated';
+        appendMessage('ai', `<strong>[${subject} • ${formatBadge}]</strong><br/>Here is your step-by-step explanation for <em>"${text}"</em>:<br/>1. Identify the core formula and given values.<br/>2. Substitute step-by-step.<br/>3. Verify units and final answer.`);
+      }, 650);
     }
 
-    function renderSchedule() {
-        const container = document.getElementById('scheduleListContainer');
-        container.innerHTML = '';
-        scheduleItems.forEach((item, index) => {
-            const div = document.createElement('div');
-            div.className = 'schedule-row-item';
-            div.innerHTML = `<span>📅 <b>${item.day}</b>: ${item.task}</span> <button onclick="removeSchedule(${index})" style="background:none;border:none;color:#ef4444;cursor:pointer;">❌</button>`;
-            container.appendChild(div);
-        });
+    function appendMessage(sender, html) {
+      const box = document.getElementById('chatBox');
+      const div = document.createElement('div');
+      div.className = `msg ${sender}`;
+      div.innerHTML = html;
+      box.appendChild(div);
+      box.scrollTop = box.scrollHeight;
     }
 
-    function addScheduleItem() {
-        const day = document.getElementById('newDayInput').value.trim();
-        const task = document.getElementById('newTaskInput').value.trim();
-        if(!day || !task) { alert("Please enter both day and subject/task."); return; }
-        scheduleItems.push({ day, task });
-        document.getElementById('newDayInput').value = '';
-        document.getElementById('newTaskInput').value = '';
-        renderSchedule();
+    // Error Vault
+    function renderVault() {
+      const list = document.getElementById('vaultList');
+      list.innerHTML = state.errors.map(err => `
+        <div class="item-card">
+          <div>
+            <span class="plan-pill">${err.subject}</span>
+            <strong style="display:block; margin-top:6px;">${err.topic}</strong>
+            <span style="font-size:12px; color:var(--muted);">Logged: ${err.date}</span>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="practiceError('${err.topic}')">Practice Similar</button>
+        </div>
+      `).join('');
     }
 
-    function removeSchedule(index) {
-        scheduleItems.splice(index, 1);
-        renderSchedule();
+    function addSampleError() {
+      const subject = document.getElementById('subjectSelect').value;
+      const topic = prompt('Enter the lesson topic or mistake to save in your Error Vault:');
+      if (!topic) return;
+      state.errors.unshift({
+        id: Date.now(),
+        subject,
+        topic,
+        date: new Date().toISOString().split('T')[0]
+      });
+      saveState();
     }
 
-    function linkParentWhatsApp() {
-        const phone = document.getElementById('parentPhoneInput').value.trim();
-        if(!phone) { alert("Please enter a valid WhatsApp phone number."); return; }
-        document.getElementById('waStatus').style.display = 'block';
-        alert(`🎉 Successfully linked parent WhatsApp (${phone})! Weekly progress reports will now be dispatched automatically.`);
+    function practiceError(topic) {
+      switchTab('chat', document.querySelector('.tab-btn'));
+      document.getElementById('chatInput').value = `Give me a practice exercise on: ${topic}`;
     }
 
-    function loadNextDailyQuestion() {
-        if(dailyQuestionsAnswered >= MAX_DAILY_QUESTIONS) {
-            alert("You have completed all 5 daily questions for today! Come back tomorrow.");
-            return;
-        }
-
-        const area = document.getElementById('classQuizArea');
-        area.style.display = 'block';
-        document.getElementById('startQuizBtn').style.display = 'none';
-
-        const qObj = dailyQuestionsPool[dailyQuestionsAnswered % dailyQuestionsPool.length];
-        
-        let html = `<p style="font-size:11px; font-weight:600; margin-bottom:6px;">Q${dailyQuestionsAnswered+1}: ${qObj.q}</p><div style="display:flex; flex-direction:column; gap:4px;">`;
-        qObj.options.forEach((opt, idx) => {
-            html += `<button class="add-btn" style="text-align:left; background:var(--card-bg); color:var(--text-main); border:1px solid var(--border);" onclick="submitQuizAnswer(${idx}, ${qObj.correct}, '${qObj.explanation.replace(/'/g, "\\'")}', '${qObj.q.replace(/'/g, "\\'")}')">${idx+1}. ${opt}</button>`;
-        });
-        html += `</div>`;
-        area.innerHTML = html;
+    // Quiz & Parent Report
+    function answerQuiz(isCorrect) {
+      const fb = document.getElementById('quizFeedback');
+      if (isCorrect) {
+        state.xp += 20;
+        saveState();
+        fb.style.color = 'var(--success)';
+        fb.textContent = `🎉 Correct! a = Δv / Δt = 20 / 4 = 5 m/s². (+20 XP • Total: ${state.xp} XP)`;
+      } else {
+        fb.style.color = 'var(--danger)';
+        fb.textContent = '❌ Not quite! Hint: Acceleration = Change in velocity ÷ Time. This topic was added to your Error Vault.';
+      }
     }
 
-    function submitQuizAnswer(selected, correct, explanation, questionText) {
-        const area = document.getElementById('classQuizArea');
-        dailyQuestionsAnswered++;
-        
-        if(selected === correct) {
-            userPoints += 10;
-            alphaTeamScore += 10;
-            area.innerHTML = `<p style="font-size:11px; color:#10b981; font-weight:bold;">✅ Correct! +10 Points earned.</p><p style="font-size:10px; margin-top:4px;">${explanation}</p>`;
-        } else {
-            errorVault.push({ q: questionText, exp: explanation });
-            area.innerHTML = `<p style="font-size:11px; color:#ef4444; font-weight:bold;">❌ Incorrect.</p><p style="font-size:10px; margin-top:4px;">${explanation}</p><p style="font-size:9px; color:#e11d48; margin-top:2px;">⚠️ Question automatically saved to your Smart Error Vault!</p>`;
-        }
-
-        if(userPoints >= 100) {
-            userPoints -= 100;
-            videoCredits += 1;
-            alert("🎉 Milestone reached! 100 points collected: +1 Free Video unlocked!");
-        }
-
-        updateStatsUI();
-
-        setTimeout(() => {
-            area.style.display = 'none';
-            document.getElementById('startQuizBtn').style.display = 'block';
-            if(dailyQuestionsAnswered < MAX_DAILY_QUESTIONS) {
-                document.getElementById('startQuizBtn').textContent = `Start Daily Question (${dailyQuestionsAnswered+1}/5) 🚀`;
-            } else {
-                document.getElementById('startQuizBtn').textContent = `Completed Today's Quiz (5/5) ✅`;
-                document.getElementById('startQuizBtn').disabled = true;
-            }
-            renderVaultList();
-        }, 3000);
+    function sendParentWhatsApp() {
+      const msg = encodeURIComponent(`Study Flow Weekly Report for ${state.name}:\n• Current Plan: ${state.plan}\n• Quiz Arena XP: ${state.xp} XP\n• Unique Projects Created: ${state.projects.length}\n• Remaining Credits: ${state.lessons} Lessons, ${state.voice} Voice Mins, ${state.videos} Videos.\nOwned by DistingStyle Ltd`);
+      window.open(`https://wa.me/?text=${msg}`, '_blank');
     }
 
-    function renderVaultList() {
-        const container = document.getElementById('vaultListContainer');
-        if(errorVault.length === 0) {
-            container.innerHTML = `<p style="font-size: 11px; color: var(--text-muted); text-align: center; padding: 15px 0;">No mistakes recorded yet!</p>`;
-            return;
-        }
-        container.innerHTML = '';
-        errorVault.forEach((item, idx) => {
-            const div = document.createElement('div');
-            div.className = 'schedule-row-item';
-            div.innerHTML = `<span>❌ <b>${item.q}</b></span> <button onclick="removeVaultItem(${idx})" style="background:none;border:none;color:var(--primary);cursor:pointer;font-size:10px;">Mastered ✓</button>`;
-            container.appendChild(div);
-        });
+    // Navigation & Modals
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('main.panel, section.panel').forEach(p => p.classList.add('hidden'));
+      document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
     }
 
-    function removeVaultItem(idx) {
-        errorVault.splice(idx, 1);
-        renderVaultList();
-        updateStatsUI();
-    }
+    function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
-    function practiceVaultErrors() {
-        if(errorVault.length === 0) {
-            alert("Your Error Vault is empty! No mistakes to practice right now.");
-            return;
-        }
-        alert(`🧠 Launching Smart Practice Session for your ${errorVault.length} saved mistake(s)...`);
-    }
-
-    window.onload = function() {
-        updateStatsUI();
-        renderSchedule();
-        renderVaultList();
+    // Language Switcher
+    const I18N = {
+      en: { lessons: '📚 Lesson Topics', voice: '🎙️ Voice Mins', videos: '🎬 Videos', tabChat: '💬 AI Tutor', tabProjects: '💡 Research Lab', tabVault: '🧠 Error Vault', tabQuiz: '🏆 Quiz Arena', tabSchedule: '📅 Schedule', tabPlans: '💎 Plans' },
+      ar: { lessons: '📚 رصيد الدروس', voice: '🎙️ دقائق الصوت', videos: '🎬 الفيديوهات', tabChat: '💬 المعلم الذكي', tabProjects: '💡 مختبر المشاريع', tabVault: '🧠 بنك الأخطاء', tabQuiz: '🏆 تحدي الأسئلة', tabSchedule: '📅 الجدول', tabPlans: '💎 الباقات' },
+      fr: { lessons: '📚 Leçons', voice: '🎙️ Mins Audio', videos: '🎬 Vidéos', tabChat: '💬 Tuteur IA', tabProjects: '💡 Projets Uniques', tabVault: '🧠 Erreurs', tabQuiz: '🏆 Quiz', tabSchedule: '📅 Planning', tabPlans: '💎 Offres' }
     };
-</script>
+
+    function changeLanguage(lang) {
+      document.body.dir = lang === 'ar' ? 'rtl' : 'ltr';
+      const dict = I18N[lang] || I18N.en;
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (dict[key]) el.textContent = dict[key];
+      });
+    }
+
+    renderUI();
+  </script>
 </body>
 </html>
